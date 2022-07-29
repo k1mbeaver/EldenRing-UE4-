@@ -11,6 +11,7 @@
 #include "Particles/ParticleSystem.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "EldenRingGameInstance.h"
+#include "MyPlayerAnimInstance.h"
 #include "EldenRingGM.h"
 
 // Sets default values
@@ -35,26 +36,14 @@ APlayerCharacter::APlayerCharacter()
 	SpringArm->bUsePawnControlRotation = true; // LookUp을 위함
 	//Camera->bUsePawnControlRotation = true;
 
-	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_EASYMODEL(TEXT("/Game/File/Mesh/Murdock.Murdock"));
-	//if (SK_EASYMODEL.Succeeded())
-	//{
-	//	GetMesh()->SetSkeletalMesh(SK_EASYMODEL.Object);
-	//}
 
-	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> PLAYER_START(TEXT("/Game/File/Mesh/Murdock.Murdock"));
-	//if (SK_EASYMODEL.Succeeded())
-	//{
-		//GetMesh()->SetSkeletalMesh(SK_EASYMODEL.Object);
-	//}
+	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
-	//GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-
-	//static ConstructorHelpers::FClassFinder<UAnimInstance> PLAYER_ANIM(TEXT("/Game/BluePrints/Murdock_AnimBlueprint.Murdock_AnimBlueprint_C"));
-	//static ConstructorHelpers::FClassFinder<UAnimInstance> PLAYER_ANIM(TEXT("/Game/BluePrints/Character_AnimBlueprint.Character_AnimBlueprint_C"));
-	//if (PLAYER_ANIM.Succeeded())
-	//{
-	//	GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
-	//}
+	static ConstructorHelpers::FClassFinder<UAnimInstance> PLAYER_ANIM(TEXT("/Game/BluePrint/MyPlayerAnimation_BP.MyPlayerAnimation_BP_C"));
+	if (PLAYER_ANIM.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
+	}
 
 	// bullet effect
 	//static ConstructorHelpers::FObjectFinder<UParticleSystem> FIRE(TEXT("ParticleSystem'/Game/ParagonMurdock/FX/Particles/Abilities/SpreadShot/FX/P_SpreadShotImpact_Radial.P_SpreadShotImpact_Radial'"));
@@ -91,7 +80,11 @@ void APlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	//CharacterAnim = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+
+	GetMesh()->SetSkeletalMesh(MyGI->GetPlayerSkeletalMesh("Default"));
+
+	CharacterAnim = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 
@@ -99,11 +92,7 @@ void APlayerCharacter::PostInitializeComponents()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
-
-	GetMesh()->SetSkeletalMesh(MyGI->GetPlayerSkeletalMesh("Default"));
-	GetCapsuleComponent()->SetRelativeLocation(FVector(-600.0f, 1500.0f, 500.0f));
+	//GetCapsuleComponent()->SetRelativeLocation(FVector(-600.0f, 1500.0f, 500.0f));
 	//AEldenRingGM* gameMode = Cast<AEldenRingGM>(GetWorld()->GetAuthGameMode());
 
 	//if (gameMode)
@@ -199,8 +188,10 @@ void APlayerCharacter::Attack()
 	// 공격 애니메이션 실행
 	//CharacterAnim->PlayAttackMontage();
 
-	//auto AnimInstance = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-	//if (nullptr == AnimInstance) return;
+	auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	if (nullptr == AnimInstance) return;
+
+	AnimInstance->PlayAttackMontage();
 }
 
 void APlayerCharacter::Run()

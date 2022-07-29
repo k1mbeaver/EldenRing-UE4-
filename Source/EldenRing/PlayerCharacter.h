@@ -61,8 +61,8 @@ public:
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 		//FVector GunOffset;
 
-	//UPROPERTY(VisibleInstanceOnly, Category = Animation)
-		//class UCharacterAnimInstance* CharacterAnim;
+	UPROPERTY(VisibleInstanceOnly, Category = Animation)
+		class UMyPlayerAnimInstance* CharacterAnim;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;

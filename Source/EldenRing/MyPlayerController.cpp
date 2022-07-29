@@ -116,7 +116,7 @@ void AMyPlayerController::Attack()
 	if (myCharacter != nullptr)
 	{
 		myCharacter->Attack();
-		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Attack!"));
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Attack!"));
 	}
 }
 
