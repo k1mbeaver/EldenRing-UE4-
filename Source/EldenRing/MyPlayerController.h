@@ -43,5 +43,9 @@ private:
 
 	void StopJumping();
 
+	void Skill();
+
+	void StopSkillIntro();
+
 	//void PlayerPause();
 };

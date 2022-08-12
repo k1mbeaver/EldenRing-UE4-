@@ -8,6 +8,8 @@
 
 DECLARE_MULTICAST_DELEGATE(FSaveAttack_AttackDelegate); // 공격 시작
 DECLARE_MULTICAST_DELEGATE(FResetCombo_AttackDelegate); // 공격 시작
+DECLARE_MULTICAST_DELEGATE(FStopIntro_AttackDelegate); // 스킬인트로 끝
+DECLARE_MULTICAST_DELEGATE(FEndSKill_AttackDelegate); // 스킬 끝
 DECLARE_MULTICAST_DELEGATE(FOnOnCollisonStart_AttackDelegate); // 공격 시작
 DECLARE_MULTICAST_DELEGATE(FOnOnCollisonEnded_AttackDelegate); // 공격 끝
 
@@ -24,6 +26,8 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	void PlayAttackMontage();
+	void PlaySkillMontage();
+	void PlaySkillIntroMontage();
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* AttackMontageTypeA;
@@ -37,11 +41,19 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* AttackMontageTypeD;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* AttackMontageSkill;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* AttackMontageSkillIntro;
+
 	FName GetAttackMontageSectionName(int32 Section);
 	void SetDeadAnim();
 
 	FSaveAttack_AttackDelegate SaveAttack_Attack;
 	FResetCombo_AttackDelegate ResetCombo_Attack;
+	FEndSKill_AttackDelegate EndSkill_Attack;
+	FStopIntro_AttackDelegate StopIntro_Attack;
 
 private:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
@@ -59,8 +71,15 @@ private:
 		void AnimNotify_SaveAttack();
 	UFUNCTION()
 		void AnimNotify_ResetCombo();
+	UFUNCTION()
+		void AnimNotify_EndSkill();
+	UFUNCTION()
+		void AnimNotify_StopIntro();
 
 public:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+		bool IsCanMove;
 };

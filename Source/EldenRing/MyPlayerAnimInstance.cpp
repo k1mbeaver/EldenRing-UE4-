@@ -11,6 +11,8 @@ UMyPlayerAnimInstance::UMyPlayerAnimInstance()
 	IsInAir = false;
 	IsDead = false;
 	IsAttacking = true;
+	IsCanMove = true;
+
 	nCombo = 0;
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE1(TEXT("AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/PrimaryAttack_A_Slow_Montage.PrimaryAttack_A_Slow_Montage'"));
 	if (ATTACK_MONTAGE1.Succeeded())
@@ -34,6 +36,18 @@ UMyPlayerAnimInstance::UMyPlayerAnimInstance()
 	if (ATTACK_MONTAGE4.Succeeded())
 	{
 		AttackMontageTypeD = ATTACK_MONTAGE4.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_SKILLMONTAGE(TEXT("AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/Montage/Ability_R_Montage.Ability_R_Montage'"));
+	if (ATTACK_SKILLMONTAGE.Succeeded())
+	{
+		AttackMontageSkill = ATTACK_SKILLMONTAGE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_SKILLINTROMONTAGE(TEXT("AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/Montage/Ability_R_Intro_Montage.Ability_R_Intro_Montage'"));
+	if (ATTACK_SKILLINTROMONTAGE.Succeeded())
+	{
+		AttackMontageSkillIntro = ATTACK_SKILLINTROMONTAGE.Object;
 	}
 }
 
@@ -82,6 +96,16 @@ void UMyPlayerAnimInstance::PlayAttackMontage()
 	}
 }
 
+void UMyPlayerAnimInstance::PlaySkillMontage()
+{
+	Montage_Play(AttackMontageSkill, 1.0f);
+}
+
+void UMyPlayerAnimInstance::PlaySkillIntroMontage()
+{
+	Montage_Play(AttackMontageSkillIntro, 1.0f);
+}
+
 void UMyPlayerAnimInstance::SetDeadAnim()
 {
 	IsDead = true;
@@ -104,4 +128,15 @@ void UMyPlayerAnimInstance::AnimNotify_ResetCombo()
 	ResetCombo_Attack.Broadcast();
 	nCombo = 0;
 	IsAttacking = true;
+}
+
+void UMyPlayerAnimInstance::AnimNotify_EndSkill()
+{
+	EndSkill_Attack.Broadcast();
+	IsCanMove = true;
+}
+
+void UMyPlayerAnimInstance::AnimNotify_StopIntro()
+{
+	StopIntro_Attack.Broadcast();
 }

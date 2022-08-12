@@ -51,6 +51,11 @@ void AMyPlayerController::SetupInputComponent()
 	InputComponent->BindAction("Run", IE_Pressed, this, &AMyPlayerController::Run);
 	InputComponent->BindAction("Run", IE_Released, this, &AMyPlayerController::StopRun);
 
+
+	// 캐릭터 스킬 함수
+	InputComponent->BindAction("Skill", IE_Pressed, this, &AMyPlayerController::Skill);
+	InputComponent->BindAction("Skill", IE_Released, this, &AMyPlayerController::StopSkillIntro);
+
 	// 플레이어 일시정지 함수
 	//InputComponent->BindAction("Pause", IE_Pressed, this, &AMyPlayerController::PlayerPause);
 }
@@ -98,6 +103,24 @@ void AMyPlayerController::Jump()
 	if (myCharacter != nullptr)
 	{
 		myCharacter->Jump();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Jump!"));
+	}
+}
+
+void AMyPlayerController::Skill()
+{
+	if (myCharacter != nullptr)
+	{
+		myCharacter->Skill();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Jump!"));
+	}
+}
+
+void AMyPlayerController::StopSkillIntro()
+{
+	if (myCharacter != nullptr)
+	{
+		myCharacter->StopSkillIntro();
 		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Jump!"));
 	}
 }

@@ -73,18 +73,13 @@ APlayerCharacter::APlayerCharacter()
 	bPlayerPause = false;
 	bCanMove = true;
 	bIsPlayerControlled = false;
+	IsAttacking = false;
 	//myGun = EGunState::BASIC;
 }
 
 void APlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
-	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
-
-	GetMesh()->SetSkeletalMesh(MyGI->GetPlayerSkeletalMesh("Default"));
-
-	CharacterAnim = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 
@@ -92,14 +87,17 @@ void APlayerCharacter::PostInitializeComponents()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	//GetCapsuleComponent()->SetRelativeLocation(FVector(-600.0f, 1500.0f, 500.0f));
-	//AEldenRingGM* gameMode = Cast<AEldenRingGM>(GetWorld()->GetAuthGameMode());
 
-	//if (gameMode)
-	//{
-		//gameMode->RestartPlayer(this->GetController());
-	//}
+	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+	GetMesh()->SetSkeletalMesh(MyGI->GetPlayerSkeletalMesh("Default"));
 
+	PlayerAnim = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	//auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	//AnimInstance->OnMontageEnded.AddDynamic(this, APlayerCharacter::OnSkillMontageEnded);
+
+	//PlayerAnim->OnMontageEnded.AddDynamic(this, &APlayerCharacter::OnSkillMontageEnded);
+	PlayerAnim->EndSkill_Attack.AddUObject(this, &APlayerCharacter::StopSkill);
+	PlayerAnim->StopIntro_Attack.AddUObject(this, &APlayerCharacter::StopIntro);
 	bIsRun = false;// 시작할 때 달리기 느려지는 오류 대처
 }
 
@@ -175,34 +173,96 @@ void APlayerCharacter::Turn(float NewAxisValue)
 
 void APlayerCharacter::Jump()
 {
-	Super::Jump();
+	if (bCanMove)
+	{
+		Super::Jump();
+	}
 }
 
 void APlayerCharacter::StopJumping()
 {
-	Super::StopJumping();
+	if (bCanMove)
+	{
+		Super::StopJumping();
+	}
 }
 
 void APlayerCharacter::Attack()
 {
 	// 공격 애니메이션 실행
 	//CharacterAnim->PlayAttackMontage();
+	if (bCanMove)
+	{
+		IsAttacking = true;
+
+		auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+		if (nullptr == AnimInstance) return;
+
+		AnimInstance->PlayAttackMontage();
+
+		//MyAnim->PlayAttackMontage();
+	}
+}
+
+void APlayerCharacter::Skill()
+{
+	// 공격 애니메이션 실행
+	//CharacterAnim->PlayAttackMontage();
+
+	bCanMove = false;
 
 	auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	if (nullptr == AnimInstance) return;
 
-	AnimInstance->PlayAttackMontage();
+	AnimInstance->PlaySkillIntroMontage();
+
+	IsAttacking = true;
+	bSkill = true;
+}
+
+void APlayerCharacter::StopSkillIntro()
+{
+	if (IsAttacking)
+	{
+		auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+		if (nullptr == AnimInstance) return;
+
+		AnimInstance->PlaySkillMontage();
+		PlayerAnim->PlaySkillMontage();
+	}
+}
+
+void APlayerCharacter::StopSkill()
+{
+	bCanMove = true;
+	IsAttacking = false;
+	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+}
+
+void APlayerCharacter::StopIntro()
+{
+	bCanMove = true;
+	IsAttacking = false;
+	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+}
+
+void APlayerCharacter::OnSkillMontageEnded(UAnimMontage* montage, bool Interrupted)
+{
+	bCanMove = true;
 }
 
 void APlayerCharacter::Run()
 {
-	GetCharacterMovement()->MaxWalkSpeed *= 2.5f;
-	bIsRun = true;
+	if (bCanMove)
+	{
+		GetCharacterMovement()->MaxWalkSpeed *= 2.5f;
+		bIsRun = true;
+	}
 }
 
 void APlayerCharacter::StopRun()
 {
-	if (bIsRun)
+	if (bIsRun && bCanMove)
 	{
 		GetCharacterMovement()->MaxWalkSpeed /= 2.5f;
 	}

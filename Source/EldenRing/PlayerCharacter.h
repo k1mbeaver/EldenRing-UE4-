@@ -37,6 +37,10 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class UCameraComponent* Camera;
 
+	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Animation)
+	//UPROPERTY(VisibleInstanceOnly, Category = Animation)
+		//class UMyPlayerAnimInstance* MyAnim;
+
 	//UPROPERTY(VisibleAnywhere, Category = PlayerStart)
 		//class AActor* PlayerSpawn;
 
@@ -79,6 +83,9 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bIsPlayerControlled;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		bool bSkill;
+
 	//UPROPERTY()
 		//class UParticleSystem* AttackParticle;
 
@@ -107,9 +114,8 @@ public:
 	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
 		float fSprintSpeedMultiPlayer; // ´Þ¸®±â
 	*/
-	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Animation)
-	//UPROPERTY(VisibleInstanceOnly, Category = Animation)
-		//class UABAnimInstance* ABAnim;
+	UPROPERTY(VisibleInstanceOnly, Category = Animation)
+		class UMyPlayerAnimInstance* PlayerAnim;
 
 public:
 	void UpDown(float NewAxisValue);
@@ -125,6 +131,19 @@ public:
 	void Run();
 
 	void StopRun();
+
+	void Skill();
+
+	void StopSkillIntro();
+
+	UFUNCTION()
+		void StopSkill();
+
+	UFUNCTION()
+		void StopIntro();
+
+	UFUNCTION()
+		void OnSkillMontageEnded(UAnimMontage* montage, bool Interrupted);
 
 	//void PlayerPause();
 
