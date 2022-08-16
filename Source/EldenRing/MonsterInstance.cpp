@@ -21,6 +21,11 @@ UMonsterInstance::UMonsterInstance()
 	//}
 }
 
+void UMonsterInstance::NativeBeginPlay()
+{
+	Super::NativeBeginPlay();
+}
+
 void UMonsterInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
@@ -39,10 +44,9 @@ void UMonsterInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UMonsterInstance::PlayAttackMontage()
+void UMonsterInstance::PlayAttackMontage(UAnimMontage* GetAttackMontage)
 {
-	UEldenRingGameInstance* MyGI = GetWorld()->GetGameInstance<UEldenRingGameInstance>();
-	Montage_Play(MyGI->GetMontage("Narbash"), 1.0f);
+	Montage_Play(GetAttackMontage, 1.0f);
 }
 
 void UMonsterInstance::SetDeadAnim()
@@ -63,4 +67,9 @@ void UMonsterInstance::AnimNotify_OnAttackStart()
 void UMonsterInstance::AnimNotify_OnAttackEnded()
 {
 	OnOnCollisonEnd_Attack.Broadcast();
+}
+
+void UMonsterInstance::AnimNotify_EndAttack()
+{
+	EndAttack_Attack.Broadcast();
 }

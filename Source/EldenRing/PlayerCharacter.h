@@ -69,7 +69,7 @@ public:
 		class UMyPlayerAnimInstance* CharacterAnim;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		bool IsAttacking;
+		bool bAttack;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bIsRun;
@@ -85,6 +85,12 @@ public:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bSkill;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		bool bTravel;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		FVector CameraOffset;
 
 	//UPROPERTY()
 		//class UParticleSystem* AttackParticle;
@@ -136,15 +142,16 @@ public:
 
 	void StopSkillIntro();
 
+	void TravelMode();
+
+	UFUNCTION()
+		void IsTravelMode();
+
 	UFUNCTION()
 		void StopSkill();
 
 	UFUNCTION()
 		void StopIntro();
 
-	UFUNCTION()
-		void OnSkillMontageEnded(UAnimMontage* montage, bool Interrupted);
-
 	//void PlayerPause();
-
 };

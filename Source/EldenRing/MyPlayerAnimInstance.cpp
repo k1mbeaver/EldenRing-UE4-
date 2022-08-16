@@ -12,6 +12,8 @@ UMyPlayerAnimInstance::UMyPlayerAnimInstance()
 	IsDead = false;
 	IsAttacking = true;
 	IsCanMove = true;
+	IsTravel = false;
+	fDirection = 0.0f;
 
 	nCombo = 0;
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE1(TEXT("AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/PrimaryAttack_A_Slow_Montage.PrimaryAttack_A_Slow_Montage'"));
@@ -48,6 +50,18 @@ UMyPlayerAnimInstance::UMyPlayerAnimInstance()
 	if (ATTACK_SKILLINTROMONTAGE.Succeeded())
 	{
 		AttackMontageSkillIntro = ATTACK_SKILLINTROMONTAGE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> TRAVEL_START(TEXT("AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/Montage/TravelMode_Start_Montage.TravelMode_Start_Montage'"));
+	if (TRAVEL_START.Succeeded())
+	{
+		StartTravelMode = TRAVEL_START.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> TRAVEL_END(TEXT("AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/Montage/TravelMode_End_Montage.TravelMode_End_Montage'"));
+	if (TRAVEL_END.Succeeded())
+	{
+		EndTravelMode = TRAVEL_END.Object;
 	}
 }
 
@@ -106,6 +120,18 @@ void UMyPlayerAnimInstance::PlaySkillIntroMontage()
 	Montage_Play(AttackMontageSkillIntro, 1.0f);
 }
 
+void UMyPlayerAnimInstance::PlayTravelStartMontage()
+{
+	Montage_Play(StartTravelMode, 1.0f);
+	IsTravel = true;
+}
+
+void UMyPlayerAnimInstance::PlayTravelEndMontage()
+{
+	Montage_Play(EndTravelMode, 1.0f);
+	IsTravel = false;
+}
+
 void UMyPlayerAnimInstance::SetDeadAnim()
 {
 	IsDead = true;
@@ -139,4 +165,14 @@ void UMyPlayerAnimInstance::AnimNotify_EndSkill()
 void UMyPlayerAnimInstance::AnimNotify_StopIntro()
 {
 	StopIntro_Attack.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_Travel_Start()
+{
+	Start_Travel.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_Travel_End()
+{
+	End_Travel.Broadcast();
 }

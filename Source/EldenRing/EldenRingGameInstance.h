@@ -10,6 +10,7 @@
 struct FPlayerFileDataTable;
 struct FMonsterDataTable;
 struct FMontageDataTable;
+struct FPlayerDataTable;
 class UDataTable;
 
 /**
@@ -25,6 +26,10 @@ public:
 
 	// 플레이어 데이터 값 얻어오기
 	USkeletalMesh* GetPlayerSkeletalMesh(FString PlayerType);
+	float GetPlayerHP();
+	float GetPlayerStamina();
+	int GetPlayerStage();
+	float GetPlayerMP();
 
 	// 몬스터 데이터값 얻어오기
 	USkeletalMesh* GetMonsterSkeletalMesh(FString MonsterType);
@@ -68,4 +73,7 @@ private:
 
 	UPROPERTY()
 		UDataTable* FMontageTable;
+
+	UPROPERTY()
+		UDataTable* FPlayerTable;
 };

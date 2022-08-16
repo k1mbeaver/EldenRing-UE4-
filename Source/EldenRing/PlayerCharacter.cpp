@@ -12,7 +12,9 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "EldenRingGameInstance.h"
 #include "MyPlayerAnimInstance.h"
+#include "MyPlayerController.h"
 #include "EldenRingGM.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -29,12 +31,15 @@ APlayerCharacter::APlayerCharacter()
 	Camera->SetupAttachment(SpringArm);
 
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
-	SpringArm->TargetArmLength = 400.0f;
-	SpringArm->SetRelativeRotation(FRotator(-55.0f, 0.0f, 50.0f));
+
+	//CameraOffset = FVector(-800.0f, 0.0f, 300.0f);
+	//Camera->SetRelativeRotation(FRotator(0.0f, -40.0f, 0.0f));
+	//SpringArm->TargetArmLength = 300.0f;
+	//SpringArm->SetRelativeLocationAndRotation(FVector(-400.0f, 0.0f, 400.0f), FRotator(-0.0f, 0.0f, 0.0f));
 
 
-	SpringArm->bUsePawnControlRotation = true; // LookUp을 위함
-	//Camera->bUsePawnControlRotation = true;
+	//SpringArm->bUsePawnControlRotation = true; // LookUp을 위함
+	//Camera->bUsePawnControlRotation = false;
 
 
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
@@ -62,8 +67,6 @@ APlayerCharacter::APlayerCharacter()
 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("MyCharacter"));
 
-	IsAttacking = false;
-
 	fMaxHp = 100.0f;
 	fPlayerHp = 100.0f;
 
@@ -73,7 +76,8 @@ APlayerCharacter::APlayerCharacter()
 	bPlayerPause = false;
 	bCanMove = true;
 	bIsPlayerControlled = false;
-	IsAttacking = false;
+	bAttack = true;
+	bTravel = false;
 	//myGun = EGunState::BASIC;
 }
 
@@ -98,6 +102,8 @@ void APlayerCharacter::BeginPlay()
 	//PlayerAnim->OnMontageEnded.AddDynamic(this, &APlayerCharacter::OnSkillMontageEnded);
 	PlayerAnim->EndSkill_Attack.AddUObject(this, &APlayerCharacter::StopSkill);
 	PlayerAnim->StopIntro_Attack.AddUObject(this, &APlayerCharacter::StopIntro);
+	PlayerAnim->Start_Travel.AddUObject(this, &APlayerCharacter::IsTravelMode);
+	PlayerAnim->End_Travel.AddUObject(this, &APlayerCharacter::IsTravelMode);
 	bIsRun = false;// 시작할 때 달리기 느려지는 오류 대처
 }
 
@@ -106,6 +112,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Camera->SetRelativeLocation(CameraOffset);
 }
 
 
@@ -114,10 +121,10 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	// 캐릭터 이동 함수
-	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &APlayerCharacter::UpDown);
-	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &APlayerCharacter::LeftRight);
-	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &APlayerCharacter::LookUp);
-	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &APlayerCharacter::Turn);
+	//PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &APlayerCharacter::UpDown);
+	//PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &APlayerCharacter::LeftRight);
+	//PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &APlayerCharacter::LookUp);
+	//PlayerInputComponent->BindAxis(TEXT("Turn"), this, &APlayerCharacter::Turn);
 	
 	// 캐릭터 점프 함수
 	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
@@ -139,6 +146,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	
 }
 
+
 void APlayerCharacter::UpDown(float NewAxisValue)
 {
 	if (bCanMove)
@@ -146,6 +154,7 @@ void APlayerCharacter::UpDown(float NewAxisValue)
 		FVector Direction = FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X);
 		Direction.Z = 0.0f;
 		Direction.Normalize();
+
 		AddMovementInput(Direction, NewAxisValue);
 	}
 }
@@ -157,6 +166,7 @@ void APlayerCharacter::LeftRight(float NewAxisValue)
 		FVector Direction = FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y);
 		Direction.Z = 0.0f;
 		Direction.Normalize();
+
 		AddMovementInput(Direction, NewAxisValue);
 	}
 }
@@ -170,6 +180,7 @@ void APlayerCharacter::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
 }
+
 
 void APlayerCharacter::Jump()
 {
@@ -191,10 +202,8 @@ void APlayerCharacter::Attack()
 {
 	// 공격 애니메이션 실행
 	//CharacterAnim->PlayAttackMontage();
-	if (bCanMove)
+	if (bAttack)
 	{
-		IsAttacking = true;
-
 		auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 		if (nullptr == AnimInstance) return;
 
@@ -210,19 +219,19 @@ void APlayerCharacter::Skill()
 	//CharacterAnim->PlayAttackMontage();
 
 	bCanMove = false;
+	bAttack = false;
 
 	auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	if (nullptr == AnimInstance) return;
 
 	AnimInstance->PlaySkillIntroMontage();
 
-	IsAttacking = true;
 	bSkill = true;
 }
 
 void APlayerCharacter::StopSkillIntro()
 {
-	if (IsAttacking)
+	if (bSkill)
 	{
 		auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 		if (nullptr == AnimInstance) return;
@@ -235,36 +244,72 @@ void APlayerCharacter::StopSkillIntro()
 void APlayerCharacter::StopSkill()
 {
 	bCanMove = true;
-	IsAttacking = false;
+	bSkill = false;
 	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 }
 
 void APlayerCharacter::StopIntro()
 {
 	bCanMove = true;
-	IsAttacking = false;
+	bSkill = false;
 	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 }
 
-void APlayerCharacter::OnSkillMontageEnded(UAnimMontage* montage, bool Interrupted)
+void APlayerCharacter::TravelMode()
 {
-	bCanMove = true;
+	bCanMove = false; // 일단 못움직이게하고
+
+	if (bTravel)
+	{
+		auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+		if (nullptr == AnimInstance) return;
+
+		AnimInstance->PlayTravelEndMontage();
+	}
+
+	else
+	{
+		auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+		if (nullptr == AnimInstance) return;
+
+		AnimInstance->PlayTravelStartMontage();
+	}
+}
+
+void APlayerCharacter::IsTravelMode()
+{
+	if (bTravel)
+	{
+		bTravel = false;
+		bCanMove = true;
+		bAttack = true;
+		GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	}
+
+	else
+	{
+		bTravel = true;
+		bCanMove = true;
+		bAttack = false;
+		GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	}
 }
 
 void APlayerCharacter::Run()
 {
 	if (bCanMove)
 	{
-		GetCharacterMovement()->MaxWalkSpeed *= 2.5f;
-		bIsRun = true;
+		GetCharacterMovement()->MaxWalkSpeed *= 2;
+		//bIsRun = true;
 	}
 }
 
 void APlayerCharacter::StopRun()
 {
-	if (bIsRun && bCanMove)
+	if (bCanMove)
 	{
-		GetCharacterMovement()->MaxWalkSpeed /= 2.5f;
+		GetCharacterMovement()->MaxWalkSpeed /= 2;
+		//bIsRun = false;
 	}
 }
 

@@ -5,19 +5,21 @@
 #include "PlayerFileDataTableClass.h"
 #include "MonsterDataTableClass.h"
 #include "MontageDataTableClass.h"
+#include "PlayerDataTableClass.h"
 
 UEldenRingGameInstance::UEldenRingGameInstance()
 {
-	FString PlayerDataPath = TEXT("DataTable'/Game/DataTable/PlayerFileData.PlayerFileData'");
+	FString PlayerFileDataPath = TEXT("DataTable'/Game/DataTable/PlayerFileData.PlayerFileData'");
 	FString MonsterDataPath = TEXT("DataTable'/Game/DataTable/MonsterData.MonsterData'");
 	FString MontageDataPath = TEXT("DataTable'/Game/DataTable/MontageData.MontageData'");
+	FString PlayerDataPath = TEXT("DataTable'/Game/DataTable/PlayerData.PlayerData'");
 
 	//E:/Unreal/ZombieShooting/Content/File/Json/PlayerData.uasset
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ABPLAYER(*PlayerDataPath);
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ABPLAYERFILE(*PlayerFileDataPath);
 
-	if (DT_ABPLAYER.Succeeded())
+	if (DT_ABPLAYERFILE.Succeeded())
 	{
-		FPlayerFileTable = DT_ABPLAYER.Object;
+		FPlayerFileTable = DT_ABPLAYERFILE.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ABMONSTER(*MonsterDataPath);
@@ -32,6 +34,13 @@ UEldenRingGameInstance::UEldenRingGameInstance()
 	if (DT_ABMONTAGE.Succeeded())
 	{
 		FMontageTable = DT_ABMONTAGE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ABPLAYER(*PlayerDataPath);
+
+	if (DT_ABPLAYER.Succeeded())
+	{
+		FPlayerTable = DT_ABPLAYER.Object;
 	}
 }
 
@@ -82,4 +91,32 @@ TSubclassOf<class UAnimInstance> UEldenRingGameInstance::GetAnimation(FString An
 	FMontageDataTable* AnimationData = FMontageTable->FindRow<FMontageDataTable>(*AnimationType, TEXT(""));
 	TSubclassOf<class UAnimInstance> myAnimation = AnimationData->MyAnimation;
 	return myAnimation;
+}
+
+float UEldenRingGameInstance::GetPlayerHP()
+{
+	FPlayerDataTable* PlayerData = FPlayerTable->FindRow<FPlayerDataTable>("Player", TEXT(""));
+	float PlayerHP = PlayerData->PlayerHP;
+	return PlayerHP;
+}
+
+float UEldenRingGameInstance::GetPlayerStamina()
+{
+	FPlayerDataTable* PlayerData = FPlayerTable->FindRow<FPlayerDataTable>("Player", TEXT(""));
+	float PlayerStamina = PlayerData->PlayerStamina;
+	return PlayerStamina;
+}
+
+int UEldenRingGameInstance::GetPlayerStage()
+{
+	FPlayerDataTable* PlayerData = FPlayerTable->FindRow<FPlayerDataTable>("Player", TEXT(""));
+	int PlayerStage = PlayerData->Stage;
+	return PlayerStage;
+}
+
+float UEldenRingGameInstance::GetPlayerMP()
+{
+	FPlayerDataTable* PlayerData = FPlayerTable->FindRow<FPlayerDataTable>("Player", TEXT(""));
+	float PlayerMP = PlayerData->PlayerMP;
+	return PlayerMP;
 }

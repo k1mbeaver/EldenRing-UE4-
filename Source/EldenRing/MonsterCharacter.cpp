@@ -34,12 +34,10 @@ AMonsterCharacter::AMonsterCharacter()
 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("MyCharacter"));
 
-	IsAttacking = false;
+	bCanAttack = true;
 
 	fMaxHp = 100.0f;
 	fAIHp = 100.0f;
-
-	IsAttacking = false;
 }
 
 void AMonsterCharacter::PostInitializeComponents()
@@ -52,7 +50,34 @@ void AMonsterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitializeAI("Narbash"); // Narbash, Props, Rampage, Sevarog, Grux
+	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+	nMonsterType = MyGI->GetPlayerStage();
+
+	
+	switch (nMonsterType)
+	{
+	case 0:
+		strMonsterType = "Grux";
+		AttackMontage = MyGI->GetMontage(strMonsterType);
+		break;
+		
+	case 1:
+		strMonsterType = "Narbash";
+		AttackMontage = MyGI->GetMontage(strMonsterType);
+		break;
+
+	case 2:
+		strMonsterType = "Rampage";
+		AttackMontage = MyGI->GetMontage(strMonsterType);
+		break;
+
+	case 3:
+		strMonsterType = "Sevarog";
+		AttackMontage = MyGI->GetMontage(strMonsterType);
+		break;
+	}
+	
+	InitializeAI(strMonsterType); // Narbash, Props, Rampage, Sevarog, Grux
 }
 
 // Called every frame
@@ -71,10 +96,20 @@ void AMonsterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void AMonsterCharacter::Attack()
 {
-	auto AnimInstance = Cast<UMonsterInstance>(GetMesh()->GetAnimInstance());
-	if (nullptr == AnimInstance) return;
+	if (bCanAttack)
+	{
+		bCanAttack = false;
 
-	AnimInstance->PlayAttackMontage();
+		auto AnimInstance = Cast<UMonsterInstance>(GetMesh()->GetAnimInstance());
+		if (nullptr == AnimInstance) return;
+
+		AnimInstance->PlayAttackMontage(AttackMontage);
+	}
+}
+
+void AMonsterCharacter::AttackEnd()
+{
+	bCanAttack = true;
 }
 
 
@@ -99,4 +134,7 @@ void AMonsterCharacter::InitializeAI(FString MonsterType)
 	fAIHp = fMaxHp;
 	GetCharacterMovement()->MaxWalkSpeed = MyGI->GetMonsterSpeed(MonsterType);
 	AttackPower = MyGI->GetMonsterPower(MonsterType);
+
+	MonsterAnim = Cast<UMonsterInstance>(GetMesh()->GetAnimInstance());
+	MonsterAnim->EndAttack_Attack.AddUObject(this, &AMonsterCharacter::AttackEnd);
 }

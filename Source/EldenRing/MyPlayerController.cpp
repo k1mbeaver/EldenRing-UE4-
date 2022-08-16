@@ -4,6 +4,7 @@
 #include "MyPlayerController.h"
 #include "PlayerCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 
 AMyPlayerController::AMyPlayerController()
 {
@@ -56,10 +57,13 @@ void AMyPlayerController::SetupInputComponent()
 	InputComponent->BindAction("Skill", IE_Pressed, this, &AMyPlayerController::Skill);
 	InputComponent->BindAction("Skill", IE_Released, this, &AMyPlayerController::StopSkillIntro);
 
+	// 캐릭터 자유이동 함수
+	InputComponent->BindAction("TravelMode", IE_Pressed, this, &AMyPlayerController::TravelMode);
+
+
 	// 플레이어 일시정지 함수
 	//InputComponent->BindAction("Pause", IE_Pressed, this, &AMyPlayerController::PlayerPause);
 }
-
 
 void AMyPlayerController::UpDown(float NewAxisValue)
 {
@@ -97,7 +101,6 @@ void AMyPlayerController::Turn(float NewAxisValue)
 	}
 }
 
-
 void AMyPlayerController::Jump()
 {
 	if (myCharacter != nullptr)
@@ -116,11 +119,21 @@ void AMyPlayerController::Skill()
 	}
 }
 
+
 void AMyPlayerController::StopSkillIntro()
 {
 	if (myCharacter != nullptr)
 	{
 		myCharacter->StopSkillIntro();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Jump!"));
+	}
+}
+
+void AMyPlayerController::TravelMode()
+{
+	if (myCharacter != nullptr)
+	{
+		myCharacter->TravelMode();
 		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Jump!"));
 	}
 }

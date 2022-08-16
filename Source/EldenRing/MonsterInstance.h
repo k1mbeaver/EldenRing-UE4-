@@ -8,6 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnOnCollisonStart_AttackDelegate); // 공격 시작
 DECLARE_MULTICAST_DELEGATE(FOnOnCollisonEnded_AttackDelegate); // 공격 끝
+DECLARE_MULTICAST_DELEGATE(FEndAttack_AttackDelegate); // 공격 끝
 
 /**
  * 
@@ -19,12 +20,10 @@ class ELDENRING_API UMonsterInstance : public UAnimInstance
 
 		UMonsterInstance();
 		virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+		virtual void NativeBeginPlay() override;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* AttackMontage;
-
-	FOnOnCollisonStart_AttackDelegate OnOnCollisonStart_Attack;
-	FOnOnCollisonEnded_AttackDelegate OnOnCollisonEnd_Attack;
 
 	FName GetAttackMontageSectionName(int32 Section);
 	void SetDeadAnim();
@@ -34,6 +33,8 @@ private:
 		void AnimNotify_OnAttackStart();
 	UFUNCTION()
 		void AnimNotify_OnAttackEnded();
+	UFUNCTION()
+		void AnimNotify_EndAttack();
 
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		float CurrentPawnSpeed; // AnimInstance를 사용해서 C++ 스크립팅 한 것을 블루프린트에서 사용이 가능하다.
@@ -44,9 +45,15 @@ private:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		bool IsDead;
 
+	int nMonsterType;
+
 public:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;
 
-	void PlayAttackMontage();
+	FOnOnCollisonStart_AttackDelegate OnOnCollisonStart_Attack;
+	FOnOnCollisonEnded_AttackDelegate OnOnCollisonEnd_Attack;
+	FEndAttack_AttackDelegate EndAttack_Attack;
+
+	void PlayAttackMontage(UAnimMontage* GetAttackMontage);
 };

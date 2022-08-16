@@ -47,5 +47,7 @@ private:
 
 	void StopSkillIntro();
 
+	void TravelMode();
+
 	//void PlayerPause();
 };

@@ -25,7 +25,7 @@ public:
 		float MonsterSpeed;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		bool IsAttacking;
+		bool bCanAttack;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = HP, Meta = (AllowPrivateAccess = true))
 		float fAIHp;
@@ -33,8 +33,20 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = HP, Meta = (AllowPrivateAccess = true))
 		float fMaxHp;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+		int nMonsterType;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+		FString strMonsterType;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 		USoundBase* DeathSound;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* AttackMontage;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Animation)
+		class UMonsterInstance* MonsterAnim;
 
 	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = HP, Meta = (AllowPrivateAccess = true))
 		//class UWidgetComponent* AIWidget;
@@ -75,6 +87,7 @@ public:
 	//float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	void Attack();
+	void AttackEnd();
 	//void AttackCheck();
 	//void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	//void AttackByPlayer(float DamageAmount);
