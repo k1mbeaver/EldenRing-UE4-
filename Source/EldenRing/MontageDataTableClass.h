@@ -17,6 +17,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UAnimMontage* MyMontage;
 
+	// 根鸥林
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAnimMontage* StartIntroMontage;
+
 	// 局聪皋捞记
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UAnimInstance> MyAnimation;

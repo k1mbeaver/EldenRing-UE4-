@@ -59,21 +59,25 @@ void AMonsterCharacter::BeginPlay()
 	case 0:
 		strMonsterType = "Grux";
 		AttackMontage = MyGI->GetMontage(strMonsterType);
+		IntroMontage = MyGI->GetStartIntroMontage(strMonsterType);
 		break;
 		
 	case 1:
 		strMonsterType = "Narbash";
 		AttackMontage = MyGI->GetMontage(strMonsterType);
+		IntroMontage = MyGI->GetStartIntroMontage(strMonsterType);
 		break;
 
 	case 2:
 		strMonsterType = "Rampage";
 		AttackMontage = MyGI->GetMontage(strMonsterType);
+		IntroMontage = MyGI->GetStartIntroMontage(strMonsterType);
 		break;
 
 	case 3:
 		strMonsterType = "Sevarog";
 		AttackMontage = MyGI->GetMontage(strMonsterType);
+		IntroMontage = MyGI->GetStartIntroMontage(strMonsterType);
 		break;
 	}
 	
@@ -137,4 +141,6 @@ void AMonsterCharacter::InitializeAI(FString MonsterType)
 
 	MonsterAnim = Cast<UMonsterInstance>(GetMesh()->GetAnimInstance());
 	MonsterAnim->EndAttack_Attack.AddUObject(this, &AMonsterCharacter::AttackEnd);
+
+	MonsterAnim->PlayIntroMontage(IntroMontage);
 }

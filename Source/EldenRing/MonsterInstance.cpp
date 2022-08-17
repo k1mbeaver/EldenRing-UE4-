@@ -13,6 +13,7 @@ UMonsterInstance::UMonsterInstance()
 	IsInAir = false;
 	IsDead = false;
 	IsAttacking = false;
+	IsIntro = true;
 
 	//static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("AnimMontage'/Game/ParagonGrux/Characters/Heroes/Grux/Animations/PrimaryAttack_FourStrikes_Montage.PrimaryAttack_FourStrikes_Montage'"));
 	//if (ATTACK_MONTAGE.Succeeded())
@@ -49,6 +50,11 @@ void UMonsterInstance::PlayAttackMontage(UAnimMontage* GetAttackMontage)
 	Montage_Play(GetAttackMontage, 1.0f);
 }
 
+void UMonsterInstance::PlayIntroMontage(UAnimMontage* GetIntroMontage)
+{
+	Montage_Play(GetIntroMontage, 1.0f);
+}
+
 void UMonsterInstance::SetDeadAnim()
 {
 	IsDead = true;
@@ -72,4 +78,9 @@ void UMonsterInstance::AnimNotify_OnAttackEnded()
 void UMonsterInstance::AnimNotify_EndAttack()
 {
 	EndAttack_Attack.Broadcast();
+}
+
+void UMonsterInstance::AnimNotify_StartGame()
+{
+	StartGame_Intro.Broadcast();
 }

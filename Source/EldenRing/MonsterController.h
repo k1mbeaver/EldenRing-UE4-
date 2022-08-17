@@ -37,4 +37,14 @@ private:
 
 	UPROPERTY()
 		class UBlackboardComponent* BBAsset;
+
+	UPROPERTY()
+		class AMonsterCharacter* myCharacter;
+
+	UPROPERTY()
+		class UMonsterInstance* MonsterAnim;
+
+	UFUNCTION()
+		void EndIntro();
+
 };

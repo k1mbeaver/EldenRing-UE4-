@@ -39,6 +39,7 @@ public:
 
 	// 애님 몽타주 데이터값 얻어오기
 	UAnimMontage* GetMontage(FString MontageType);
+	UAnimMontage* GetStartIntroMontage(FString MontageType);
 
 	// 애니메이션 데이터값 얻어오기
 	TSubclassOf<class UAnimInstance> GetAnimation(FString AnimationType);

@@ -45,6 +45,9 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* AttackMontage;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* IntroMontage;
+
 	UPROPERTY(VisibleInstanceOnly, Category = Animation)
 		class UMonsterInstance* MonsterAnim;
 

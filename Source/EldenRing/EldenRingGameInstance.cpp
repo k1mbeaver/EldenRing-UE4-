@@ -11,7 +11,7 @@ UEldenRingGameInstance::UEldenRingGameInstance()
 {
 	FString PlayerFileDataPath = TEXT("DataTable'/Game/DataTable/PlayerFileData.PlayerFileData'");
 	FString MonsterDataPath = TEXT("DataTable'/Game/DataTable/MonsterData.MonsterData'");
-	FString MontageDataPath = TEXT("DataTable'/Game/DataTable/MontageData.MontageData'");
+	FString MontageDataPath = TEXT("DataTable'/Game/DataTable/MontageData1.MontageData1'");
 	FString PlayerDataPath = TEXT("DataTable'/Game/DataTable/PlayerData.PlayerData'");
 
 	//E:/Unreal/ZombieShooting/Content/File/Json/PlayerData.uasset
@@ -119,4 +119,11 @@ float UEldenRingGameInstance::GetPlayerMP()
 	FPlayerDataTable* PlayerData = FPlayerTable->FindRow<FPlayerDataTable>("Player", TEXT(""));
 	float PlayerMP = PlayerData->PlayerMP;
 	return PlayerMP;
+}
+
+UAnimMontage* UEldenRingGameInstance::GetStartIntroMontage(FString MontageType)
+{
+	FMontageDataTable* MontageData = FMontageTable->FindRow<FMontageDataTable>(*MontageType, TEXT(""));
+	UAnimMontage* myMontage = MontageData->StartIntroMontage;
+	return myMontage;
 }
