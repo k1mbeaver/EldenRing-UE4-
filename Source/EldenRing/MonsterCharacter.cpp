@@ -9,6 +9,7 @@
 #include "MonsterController.h"
 #include "MonsterInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
 
 // Sets default values
 AMonsterCharacter::AMonsterCharacter()
@@ -24,6 +25,14 @@ AMonsterCharacter::AMonsterCharacter()
 		//GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
 	//}
 
+	ParticleMuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
+	ParticleMuzzleLocation->SetupAttachment(GetCapsuleComponent());
+	ParticleMuzzleLocation->SetRelativeLocation(FVector(-80.f, 80.0f, 30.0f));
+
+	IntroParticleMuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("IntroMuzzleLocation"));
+	IntroParticleMuzzleLocation->SetupAttachment(GetCapsuleComponent());
+	IntroParticleMuzzleLocation->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+
 	GetCharacterMovement()->JumpZVelocity = 400.0f;
 	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 
@@ -33,6 +42,13 @@ AMonsterCharacter::AMonsterCharacter()
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("MyCharacter"));
+
+	// bullet effect
+	//static ConstructorHelpers::FObjectFinder<UParticleSystem> ATTACK(TEXT("ParticleSystem'/Game/ParagonSevarog/FX/Particles/Abilities/Primary/FX/P_Sevarog_Melee_SucessfulImpact.P_Sevarog_Melee_SucessfulImpact'"));
+	//if (ATTACK.Succeeded())
+	//{
+		//AttackParticle = ATTACK.Object;
+	//}
 
 	bCanAttack = true;
 
@@ -58,26 +74,18 @@ void AMonsterCharacter::BeginPlay()
 	{
 	case 0:
 		strMonsterType = "Grux";
-		AttackMontage = MyGI->GetMontage(strMonsterType);
-		IntroMontage = MyGI->GetStartIntroMontage(strMonsterType);
 		break;
 		
 	case 1:
 		strMonsterType = "Narbash";
-		AttackMontage = MyGI->GetMontage(strMonsterType);
-		IntroMontage = MyGI->GetStartIntroMontage(strMonsterType);
 		break;
 
 	case 2:
 		strMonsterType = "Rampage";
-		AttackMontage = MyGI->GetMontage(strMonsterType);
-		IntroMontage = MyGI->GetStartIntroMontage(strMonsterType);
 		break;
 
 	case 3:
 		strMonsterType = "Sevarog";
-		AttackMontage = MyGI->GetMontage(strMonsterType);
-		IntroMontage = MyGI->GetStartIntroMontage(strMonsterType);
 		break;
 	}
 	
@@ -116,6 +124,24 @@ void AMonsterCharacter::AttackEnd()
 	bCanAttack = true;
 }
 
+void AMonsterCharacter::Skill()
+{
+	if (bCanAttack)
+	{
+		bCanAttack = false;
+
+		auto AnimInstance = Cast<UMonsterInstance>(GetMesh()->GetAnimInstance());
+		if (nullptr == AnimInstance) return;
+
+		AnimInstance->PlaySkillMontage(SkillMontage);
+	}
+}
+
+void AMonsterCharacter::SkillEnd()
+{
+	bCanAttack = true;
+}
+
 
 void AMonsterCharacter::StopAIController()
 {
@@ -127,13 +153,20 @@ void AMonsterCharacter::StopAIController()
 void AMonsterCharacter::InitializeAI(FString MonsterType)
 {
 	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
-	//MyAnim = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
-	//auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
-	//AnimInstance->OnMontageEnded.AddDynamic(this, APlayerCharacter::OnSkillMontageEnded);
+
+	AttackMontage = MyGI->GetMontage(MonsterType);
+	IntroMontage = MyGI->GetStartIntroMontage(MonsterType);
+	SkillMontage = MyGI->GetSkillMontage(MonsterType);
+
+	AttackParticle = MyGI->GetMonsterAttackParticle(MonsterType);
+	SkillParticle = MyGI->GetMonsterSkillParticle(MonsterType);
+	IntroParticle = MyGI->GetMonsterIntroParticle(MonsterType);
+
 	GetMesh()->SetSkeletalMesh(MyGI->GetMonsterSkeletalMesh(MonsterType));
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 	GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 	GetMesh()->SetAnimInstanceClass(MyGI->GetAnimation(MonsterType));
+
 	fMaxHp = MyGI->GetMonsterHp(MonsterType);
 	fAIHp = fMaxHp;
 	GetCharacterMovement()->MaxWalkSpeed = MyGI->GetMonsterSpeed(MonsterType);
@@ -141,6 +174,26 @@ void AMonsterCharacter::InitializeAI(FString MonsterType)
 
 	MonsterAnim = Cast<UMonsterInstance>(GetMesh()->GetAnimInstance());
 	MonsterAnim->EndAttack_Attack.AddUObject(this, &AMonsterCharacter::AttackEnd);
+	MonsterAnim->EndSkill_Skill.AddUObject(this, &AMonsterCharacter::SkillEnd);
+	MonsterAnim->StartParticle_Particle.AddUObject(this, &AMonsterCharacter::AttackParticleStart);
+	MonsterAnim->PlayParticleEffect_Particle.AddUObject(this, &AMonsterCharacter::IntroParticleStart);
+	MonsterAnim->StartSkillParticle_Particle.AddUObject(this, &AMonsterCharacter::SkillParticleStart);
 
+	// 인트로 모션 시작
 	MonsterAnim->PlayIntroMontage(IntroMontage);
+}
+
+void AMonsterCharacter::AttackParticleStart()
+{
+	GameStatic->SpawnEmitterAttached(AttackParticle, ParticleMuzzleLocation, FName("ParticleMuzzleLocation"));
+}
+
+void AMonsterCharacter::IntroParticleStart()
+{
+	GameStatic->SpawnEmitterAttached(IntroParticle, IntroParticleMuzzleLocation, FName("IntroParticleMuzzleLocation"));
+}
+
+void AMonsterCharacter::SkillParticleStart()
+{
+	GameStatic->SpawnEmitterAttached(SkillParticle, ParticleMuzzleLocation, FName("ParticleMuzzleLocation"));
 }

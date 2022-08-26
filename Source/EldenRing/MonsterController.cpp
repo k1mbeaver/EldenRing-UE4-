@@ -13,7 +13,7 @@
 const FName AMonsterController::HomePosKey(TEXT("HomePos"));
 const FName AMonsterController::PatrolPosKey(TEXT("PatrolPos"));
 const FName AMonsterController::TargetKey(TEXT("Target"));
-const FName AMonsterController::bSkill(TEXT("Skill"));
+const FName AMonsterController::SkillTime(TEXT("SkillTime"));
 
 AMonsterController::AMonsterController(FObjectInitializer const& object_initializer)
 {

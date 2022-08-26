@@ -6,13 +6,15 @@
 #include "MonsterDataTableClass.h"
 #include "MontageDataTableClass.h"
 #include "PlayerDataTableClass.h"
+#include "MonsterParticleDataTableClass.h"
 
 UEldenRingGameInstance::UEldenRingGameInstance()
 {
 	FString PlayerFileDataPath = TEXT("DataTable'/Game/DataTable/PlayerFileData.PlayerFileData'");
 	FString MonsterDataPath = TEXT("DataTable'/Game/DataTable/MonsterData.MonsterData'");
-	FString MontageDataPath = TEXT("DataTable'/Game/DataTable/MontageData1.MontageData1'");
+	FString MontageDataPath = TEXT("DataTable'/Game/DataTable/MontageData.MontageData'");
 	FString PlayerDataPath = TEXT("DataTable'/Game/DataTable/PlayerData.PlayerData'");
+	FString MonsterParticleDataPath = TEXT("DataTable'/Game/DataTable/MonsterParticleData.MonsterParticleData'");
 
 	//E:/Unreal/ZombieShooting/Content/File/Json/PlayerData.uasset
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ABPLAYERFILE(*PlayerFileDataPath);
@@ -41,6 +43,13 @@ UEldenRingGameInstance::UEldenRingGameInstance()
 	if (DT_ABPLAYER.Succeeded())
 	{
 		FPlayerTable = DT_ABPLAYER.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ABMONSERPARTICLE(*MonsterParticleDataPath);
+
+	if (DT_ABMONSERPARTICLE.Succeeded())
+	{
+		FMonsterParticleTable = DT_ABMONSERPARTICLE.Object;
 	}
 }
 
@@ -126,4 +135,32 @@ UAnimMontage* UEldenRingGameInstance::GetStartIntroMontage(FString MontageType)
 	FMontageDataTable* MontageData = FMontageTable->FindRow<FMontageDataTable>(*MontageType, TEXT(""));
 	UAnimMontage* myMontage = MontageData->StartIntroMontage;
 	return myMontage;
+}
+
+UAnimMontage* UEldenRingGameInstance::GetSkillMontage(FString MontageType)
+{
+	FMontageDataTable* MontageData = FMontageTable->FindRow<FMontageDataTable>(*MontageType, TEXT(""));
+	UAnimMontage* myMontage = MontageData->SkillMontage;
+	return myMontage;
+}
+
+UParticleSystem* UEldenRingGameInstance::GetMonsterAttackParticle(FString MonsterType)
+{
+	FMonsterParticleDataTable* ParticleData = FMonsterParticleTable->FindRow<FMonsterParticleDataTable>(*MonsterType, TEXT(""));
+	UParticleSystem* myParticle = ParticleData->MonsterAttack;
+	return myParticle;
+}
+
+UParticleSystem* UEldenRingGameInstance::GetMonsterSkillParticle(FString MonsterType)
+{
+	FMonsterParticleDataTable* ParticleData = FMonsterParticleTable->FindRow<FMonsterParticleDataTable>(*MonsterType, TEXT(""));
+	UParticleSystem* myParticle = ParticleData->MonsterSkill;
+	return myParticle;
+}
+
+UParticleSystem* UEldenRingGameInstance::GetMonsterIntroParticle(FString MonsterType)
+{
+	FMonsterParticleDataTable* ParticleData = FMonsterParticleTable->FindRow<FMonsterParticleDataTable>(*MonsterType, TEXT(""));
+	UParticleSystem* myParticle = ParticleData->MonsterIntro;
+	return myParticle;
 }

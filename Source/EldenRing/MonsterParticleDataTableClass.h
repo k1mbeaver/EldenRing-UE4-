@@ -5,38 +5,36 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
-#include "MontageDataTableClass.generated.h"
+#include "MonsterParticleDataTableClass.generated.h"
+
 
 USTRUCT(BlueprintType)
-struct FMontageDataTable : public FTableRowBase
+struct FMonsterParticleDataTable : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
 public:
-	// 몽타주
+	// 플레이어 스켈레탈 메시
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UAnimMontage* MyMontage;
+		UParticleSystem* MonsterAttack;
 
+	// 플레이어 스켈레탈 메시
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UAnimMontage* SkillMontage;
+		UParticleSystem* MonsterIntro;
 
-	// 몽타주
+	// 플레이어 스켈레탈 메시
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UAnimMontage* StartIntroMontage;
-
-	// 애니메이션
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UAnimInstance> MyAnimation;
+		UParticleSystem* MonsterSkill;
 };
 
 UCLASS()
-class ELDENRING_API AMontageDataTableClass : public AActor
+class ELDENRING_API AMonsterParticleDataTableClass : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AMontageDataTableClass();
+	AMonsterParticleDataTableClass();
 
 protected:
 	// Called when the game starts or when spawned

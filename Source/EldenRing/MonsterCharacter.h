@@ -48,8 +48,26 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* IntroMontage;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* SkillMontage;
+
 	UPROPERTY(VisibleInstanceOnly, Category = Animation)
 		class UMonsterInstance* MonsterAnim;
+
+	UPROPERTY()
+		class UParticleSystem* AttackParticle;
+
+	UPROPERTY()
+		class UParticleSystem* IntroParticle;
+
+	UPROPERTY()
+		class UParticleSystem* SkillParticle;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+		USceneComponent* ParticleMuzzleLocation;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+		USceneComponent* IntroParticleMuzzleLocation;
 
 	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = HP, Meta = (AllowPrivateAccess = true))
 		//class UWidgetComponent* AIWidget;
@@ -90,10 +108,15 @@ public:
 	//float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	void Attack();
+	void Skill();
 	void AttackEnd();
+	void SkillEnd();
 	//void AttackCheck();
 	//void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	//void AttackByPlayer(float DamageAmount);
 	void StopAIController();
 	void InitializeAI(FString MonsterType);
+	void AttackParticleStart();
+	void IntroParticleStart();
+	void SkillParticleStart();
 };

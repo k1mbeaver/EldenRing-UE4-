@@ -11,6 +11,7 @@ struct FPlayerFileDataTable;
 struct FMonsterDataTable;
 struct FMontageDataTable;
 struct FPlayerDataTable;
+struct FMonsterParticleDataTable;
 class UDataTable;
 
 /**
@@ -39,10 +40,17 @@ public:
 
 	// 애님 몽타주 데이터값 얻어오기
 	UAnimMontage* GetMontage(FString MontageType);
+	UAnimMontage* GetSkillMontage(FString MontageType);
 	UAnimMontage* GetStartIntroMontage(FString MontageType);
 
 	// 애니메이션 데이터값 얻어오기
 	TSubclassOf<class UAnimInstance> GetAnimation(FString AnimationType);
+
+	// 몬스터 파티클 얻어오기
+	UParticleSystem* GetMonsterAttackParticle(FString MonsterType);
+	UParticleSystem* GetMonsterSkillParticle(FString MonsterType);
+	UParticleSystem* GetMonsterIntroParticle(FString MonsterType);
+
 
 	/*
 	FString GetMonsterName(FString MonsterType);
@@ -77,4 +85,7 @@ private:
 
 	UPROPERTY()
 		UDataTable* FPlayerTable;
+
+	UPROPERTY()
+		UDataTable* FMonsterParticleTable;
 };
