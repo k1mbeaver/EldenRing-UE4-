@@ -71,14 +71,9 @@ FName UMonsterInstance::GetAttackMontageSectionName(int32 Section)
 	return FName(*FString::Printf(TEXT("Attack%d"), Section));
 }
 
-void UMonsterInstance::AnimNotify_OnAttackStart()
+void UMonsterInstance::AnimNotify_AttackCheck()
 {
-	OnOnCollisonStart_Attack.Broadcast();
-}
-
-void UMonsterInstance::AnimNotify_OnAttackEnded()
-{
-	OnOnCollisonEnd_Attack.Broadcast();
+	AttackCheck_Attack.Broadcast();
 }
 
 void UMonsterInstance::AnimNotify_EndAttack()
@@ -86,7 +81,7 @@ void UMonsterInstance::AnimNotify_EndAttack()
 	EndAttack_Attack.Broadcast();
 }
 
-void UMonsterInstance::AnimNotify_StartGame()
+void UMonsterInstance::AnimNotify_GameStart()
 {
 	StartGame_Intro.Broadcast();
 }
@@ -101,12 +96,17 @@ void UMonsterInstance::AnimNotify_StartParticle()
 	StartParticle_Particle.Broadcast();
 }
 
-void UMonsterInstance::AnimNotify_PlayParticleEffect()
+void UMonsterInstance::AnimNotify_StartIntroParticle()
 {
-	PlayParticleEffect_Particle.Broadcast();
+	StartIntroParticle_Particle.Broadcast();
 }
 
 void UMonsterInstance::AnimNotify_StartSkillParticle()
 {
 	StartSkillParticle_Particle.Broadcast();
+}
+
+void UMonsterInstance::AnimNotify_StopMonster()
+{
+	StopMonster_Death.Broadcast();
 }

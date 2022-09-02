@@ -13,7 +13,9 @@
 #include "EldenRingGameInstance.h"
 #include "MyPlayerAnimInstance.h"
 #include "MyPlayerController.h"
+#include "MonsterCharacter.h"
 #include "EldenRingGM.h"
+#include "DrawDebugHelpers.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 
 // Sets default values
@@ -44,11 +46,13 @@ APlayerCharacter::APlayerCharacter()
 
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
+	/*
 	static ConstructorHelpers::FClassFinder<UAnimInstance> PLAYER_ANIM(TEXT("/Game/BluePrint/MyPlayerAnimation_BP.MyPlayerAnimation_BP_C"));
 	if (PLAYER_ANIM.Succeeded())
 	{
 		GetMesh()->SetAnimInstanceClass(PLAYER_ANIM.Class);
 	}
+	*/
 
 	// bullet effect
 	//static ConstructorHelpers::FObjectFinder<UParticleSystem> FIRE(TEXT("ParticleSystem'/Game/ParagonMurdock/FX/Particles/Abilities/SpreadShot/FX/P_SpreadShotImpact_Radial.P_SpreadShotImpact_Radial'"));
@@ -65,10 +69,13 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 
-	GetCapsuleComponent()->SetCollisionProfileName(TEXT("MyCharacter"));
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("ProjectPlayer"));
 
-	fMaxHp = 100.0f;
-	fPlayerHp = 100.0f;
+	fMaxHp = 10000.0f;
+	fPlayerHp = 10000.0f;
+	AttackRange = 250.0f;
+	AttackRadius = 50.0f;
+	AttackPower = 10000.0f; // 나중에 파워 설정 ㄱ
 
 	//nSpecialGunBullet = 30;
 
@@ -94,16 +101,32 @@ void APlayerCharacter::BeginPlay()
 
 	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
 	GetMesh()->SetSkeletalMesh(MyGI->GetPlayerSkeletalMesh("Default"));
+	GetMesh()->SetAnimInstanceClass(MyGI->GetPlayerAnimation());
+
+	AttackAMontage = MyGI->GetPlayerAttackAMontage();
+	AttackBMontage = MyGI->GetPlayerAttackBMontage();
+	AttackCMontage = MyGI->GetPlayerAttackCMontage();
+	AttackDMontage = MyGI->GetPlayerAttackDMontage();
+	SkillIntroMontage = MyGI->GetPlayerSkillIntroMontage();
+	SkillMontage = MyGI->GetPlayerSkillMontage();
+	StartTravelMontage = MyGI->GetPlayerStartTravelMontage();
+	EndTravelMontage = MyGI->GetPlayerEndTravelMontage();
+	StunMontage = MyGI->GetPlayerStunMontage();
 
 	PlayerAnim = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
-	//auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
-	//AnimInstance->OnMontageEnded.AddDynamic(this, APlayerCharacter::OnSkillMontageEnded);
 
-	//PlayerAnim->OnMontageEnded.AddDynamic(this, &APlayerCharacter::OnSkillMontageEnded);
+	PlayerAnim->AttackCheck_Attack.AddUObject(this, &APlayerCharacter::AttackCheck);
 	PlayerAnim->EndSkill_Attack.AddUObject(this, &APlayerCharacter::StopSkill);
 	PlayerAnim->StopIntro_Attack.AddUObject(this, &APlayerCharacter::StopIntro);
 	PlayerAnim->Start_Travel.AddUObject(this, &APlayerCharacter::IsTravelMode);
 	PlayerAnim->End_Travel.AddUObject(this, &APlayerCharacter::IsTravelMode);
+	PlayerAnim->CantMove_Stun.AddUObject(this, &APlayerCharacter::IsStunStart);
+	PlayerAnim->CanMove_Stun.AddUObject(this, &APlayerCharacter::IsStunEnd);
+	PlayerAnim->IntroCantMove_Intro.AddUObject(this, &APlayerCharacter::IntroCantMove);
+	PlayerAnim->IntroCanMove_Intro.AddUObject(this, &APlayerCharacter::IntroCanMove);
+	PlayerAnim->SaveAttack_Attack.AddUObject(this, &APlayerCharacter::SaveCombo);
+	PlayerAnim->ResetCombo_Attack.AddUObject(this, &APlayerCharacter::ResetCombo);
+
 	bIsRun = false;// 시작할 때 달리기 느려지는 오류 대처
 }
 
@@ -173,12 +196,18 @@ void APlayerCharacter::LeftRight(float NewAxisValue)
 
 void APlayerCharacter::LookUp(float NewAxisValue)
 {
-	AddControllerPitchInput(NewAxisValue);
+	if (bCanMove)
+	{
+		AddControllerPitchInput(NewAxisValue);
+	}
 }
 
 void APlayerCharacter::Turn(float NewAxisValue)
 {
-	AddControllerYawInput(NewAxisValue);
+	if (bCanMove)
+	{
+		AddControllerYawInput(NewAxisValue);
+	}
 }
 
 
@@ -207,9 +236,73 @@ void APlayerCharacter::Attack()
 		auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 		if (nullptr == AnimInstance) return;
 
-		AnimInstance->PlayAttackMontage();
+		if (nCombo == 0)
+		{
+			AnimInstance->PlayAttackMontage(AttackAMontage);
+		}
 
-		//MyAnim->PlayAttackMontage();
+		else if (nCombo == 1)
+		{
+			AnimInstance->PlayAttackMontage(AttackBMontage);
+		}
+
+		else if (nCombo == 2)
+		{
+			AnimInstance->PlayAttackMontage(AttackCMontage);
+		}
+
+		else if (nCombo == 3)
+		{
+			AnimInstance->PlayAttackMontage(AttackDMontage);
+		}
+	}
+}
+
+void APlayerCharacter::AttackCheck()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, this);
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * AttackRange,
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel3, // Attack 채널 player의 경우에만 충돌 한다
+		FCollisionShape::MakeSphere(AttackRadius),
+		Params);
+
+#if ENABLE_DRAW_DEBUG
+	FVector TraceVec = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + TraceVec * 0.5f;
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+	FColor DrawColor = bResult ? FColor::Green : FColor::Red;
+	float DebugLifeTime = 5.0f;
+
+	// 이거는 에디터에서만 사용하는거		
+	DrawDebugCapsule(GetWorld(),
+		Center,
+		HalfHeight,
+		AttackRadius,
+		CapsuleRot,
+		DrawColor,
+		false,
+		DebugLifeTime);
+
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerPunch!")); // 플레이어가 펀치하는지 확인용
+
+#endif
+
+
+	if (bResult)
+	{
+		if (HitResult.Actor.IsValid())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Hit!"));
+			FDamageEvent DamageEvent;
+			AMonsterCharacter* HitCharacter = Cast<AMonsterCharacter>(HitResult.Actor);
+			HitCharacter->TakeDamage(AttackPower, DamageEvent, GetController(), this);
+		}
 	}
 }
 
@@ -218,15 +311,28 @@ void APlayerCharacter::Skill()
 	// 공격 애니메이션 실행
 	//CharacterAnim->PlayAttackMontage();
 
-	bCanMove = false;
-	bAttack = false;
+	if (bCanMove)
+	{
+		bCanMove = false;
+		bAttack = false;
 
-	auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
-	if (nullptr == AnimInstance) return;
+		auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+		if (nullptr == AnimInstance) return;
 
-	AnimInstance->PlaySkillIntroMontage();
+		AnimInstance->PlaySkillIntroMontage(SkillIntroMontage);
 
-	bSkill = true;
+		bSkill = true;
+	}
+}
+
+void APlayerCharacter::SaveCombo()
+{
+	nCombo++;
+}
+
+void APlayerCharacter::ResetCombo()
+{
+	nCombo = 0;
 }
 
 void APlayerCharacter::StopSkillIntro()
@@ -236,8 +342,7 @@ void APlayerCharacter::StopSkillIntro()
 		auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 		if (nullptr == AnimInstance) return;
 
-		AnimInstance->PlaySkillMontage();
-		PlayerAnim->PlaySkillMontage();
+		AnimInstance->PlaySkillMontage(SkillMontage);
 	}
 }
 
@@ -257,22 +362,24 @@ void APlayerCharacter::StopIntro()
 
 void APlayerCharacter::TravelMode()
 {
-	bCanMove = false; // 일단 못움직이게하고
-
-	if (bTravel)
+	if (bCanMove && bTravel)
 	{
+		bCanMove = false; // 일단 못움직이게하고
+
 		auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 		if (nullptr == AnimInstance) return;
 
-		AnimInstance->PlayTravelEndMontage();
+		AnimInstance->PlayTravelEndMontage(EndTravelMontage);
 	}
 
-	else
+	else if(bCanMove && !bTravel)
 	{
+		bCanMove = false; // 일단 못움직이게하고
+
 		auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 		if (nullptr == AnimInstance) return;
 
-		AnimInstance->PlayTravelStartMontage();
+		AnimInstance->PlayTravelStartMontage(StartTravelMontage);
 	}
 }
 
@@ -313,6 +420,16 @@ void APlayerCharacter::StopRun()
 	}
 }
 
+void APlayerCharacter::IsStunStart()
+{
+	bAttack = false;
+}
+
+void APlayerCharacter::IsStunEnd()
+{
+	bAttack = true;
+}
+
 /*
 void APlayerCharacter::PlayerPause()
 {
@@ -330,6 +447,8 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 {
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
+	PlayerAnim->PlayStunMontage(StunMontage); // 기절 애니메이션 출력
+
 	fPlayerHp -= FinalDamage;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Attack!"));
 
@@ -339,9 +458,9 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 
 	//HUD->SetPlayerHP(fCurrentHP);
 
-	if (fPlayerHp == 0) // 피가 다 까이면
+	if (fPlayerHp < 0) // 피가 다 까이면
 	{
-		//CharacterAnim->SetDeadAnim();
+		PlayerAnim->SetDeadAnim();
 
 		bCanMove = false;
 
@@ -359,5 +478,19 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	//MyTakeDamage.Broadcast();
 	return FinalDamage;
 
+}
+
+void APlayerCharacter::IntroCantMove()
+{
+	bCanMove = false;
+	bAttack = false;
+	bSkill = false;
+}
+
+void APlayerCharacter::IntroCanMove()
+{
+	bCanMove = true;
+	bAttack = true;
+	bSkill = true;
 }
 

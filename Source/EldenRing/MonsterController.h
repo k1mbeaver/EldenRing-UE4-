@@ -28,6 +28,8 @@ public:
 
 	void RunAI();
 	void StopAI();
+	UFUNCTION()
+		void EndIntro();
 
 private:
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
@@ -41,11 +43,4 @@ private:
 
 	UPROPERTY()
 		class AMonsterCharacter* myCharacter;
-
-	UPROPERTY()
-		class UMonsterInstance* MonsterAnim;
-
-	UFUNCTION()
-		void EndIntro();
-
 };

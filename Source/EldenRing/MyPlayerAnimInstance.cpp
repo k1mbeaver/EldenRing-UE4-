@@ -13,6 +13,7 @@ UMyPlayerAnimInstance::UMyPlayerAnimInstance()
 	IsAttacking = true;
 	IsCanMove = true;
 	IsTravel = false;
+	IsIntro = true;
 	fDirection = 0.0f;
 
 	nCombo = 0;
@@ -63,6 +64,12 @@ UMyPlayerAnimInstance::UMyPlayerAnimInstance()
 	{
 		EndTravelMode = TRAVEL_END.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> STUN_START(TEXT("AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/Montage/Stun_Montage.Stun_Montage'"));
+	if (STUN_START.Succeeded())
+	{
+		StunAnimation = STUN_START.Object;
+	}
 }
 
 void UMyPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -83,53 +90,39 @@ void UMyPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UMyPlayerAnimInstance::PlayAttackMontage()
+void UMyPlayerAnimInstance::PlayAttackMontage(UAnimMontage* GetAttackMontage)
 {
 	if (IsAttacking == true)
 	{
-		IsAttacking = false;
-		if (nCombo == 0)
-		{
-			Montage_Play(AttackMontageTypeA, 1.0f);
-		}
-
-		else if (nCombo == 1)
-		{
-			Montage_Play(AttackMontageTypeB, 1.0f);
-		}
-
-		else if (nCombo == 2)
-		{
-			Montage_Play(AttackMontageTypeC, 1.0f);
-		}
-
-		else if (nCombo == 3)
-		{
-			Montage_Play(AttackMontageTypeD, 1.0f);
-		}
+		Montage_Play(GetAttackMontage, 1.0f);
 	}
 }
 
-void UMyPlayerAnimInstance::PlaySkillMontage()
+void UMyPlayerAnimInstance::PlaySkillMontage(UAnimMontage* GetAttackMontage)
 {
 	Montage_Play(AttackMontageSkill, 1.0f);
 }
 
-void UMyPlayerAnimInstance::PlaySkillIntroMontage()
+void UMyPlayerAnimInstance::PlaySkillIntroMontage(UAnimMontage* GetAttackMontage)
 {
 	Montage_Play(AttackMontageSkillIntro, 1.0f);
 }
 
-void UMyPlayerAnimInstance::PlayTravelStartMontage()
+void UMyPlayerAnimInstance::PlayTravelStartMontage(UAnimMontage* GetAttackMontage)
 {
 	Montage_Play(StartTravelMode, 1.0f);
 	IsTravel = true;
 }
 
-void UMyPlayerAnimInstance::PlayTravelEndMontage()
+void UMyPlayerAnimInstance::PlayTravelEndMontage(UAnimMontage* GetAttackMontage)
 {
 	Montage_Play(EndTravelMode, 1.0f);
 	IsTravel = false;
+}
+
+void UMyPlayerAnimInstance::PlayStunMontage(UAnimMontage* GetAttackMontage)
+{
+	Montage_Play(StunAnimation, 1.0f);
 }
 
 void UMyPlayerAnimInstance::SetDeadAnim()
@@ -156,6 +149,11 @@ void UMyPlayerAnimInstance::AnimNotify_ResetCombo()
 	IsAttacking = true;
 }
 
+void UMyPlayerAnimInstance::AnimNotify_AttackCheck()
+{
+	AttackCheck_Attack.Broadcast();
+}
+
 void UMyPlayerAnimInstance::AnimNotify_EndSkill()
 {
 	EndSkill_Attack.Broadcast();
@@ -175,4 +173,25 @@ void UMyPlayerAnimInstance::AnimNotify_Travel_Start()
 void UMyPlayerAnimInstance::AnimNotify_Travel_End()
 {
 	End_Travel.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_CantMove()
+{
+	CantMove_Stun.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_CanMove()
+{
+	CanMove_Stun.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_IntroCantMove()
+{
+	IntroCantMove_Intro.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_IntroCanMove()
+{
+	IntroCanMove_Intro.Broadcast();
+	IsIntro = false;
 }

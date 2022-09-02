@@ -71,6 +71,15 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		bool bAttack;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float AttackRange;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float AttackRadius;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float AttackPower;
+
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bIsRun;
 
@@ -88,6 +97,9 @@ public:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bTravel;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		int nCombo;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		FVector CameraOffset;
@@ -123,6 +135,35 @@ public:
 	UPROPERTY(VisibleInstanceOnly, Category = Animation)
 		class UMyPlayerAnimInstance* PlayerAnim;
 
+private:
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* AttackAMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* AttackBMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* AttackCMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* AttackDMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* SkillMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* SkillIntroMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Travel, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* StartTravelMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Travel, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* EndTravelMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Stun, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* StunMontage;
+
 public:
 	void UpDown(float NewAxisValue);
 
@@ -133,6 +174,8 @@ public:
 	void Turn(float NewAxisValue);
 
 	void Attack();
+
+	void AttackCheck();
 
 	void Run();
 
@@ -145,6 +188,18 @@ public:
 	void TravelMode();
 
 	UFUNCTION()
+		void SaveCombo();
+
+	UFUNCTION()
+		void ResetCombo();
+	
+	UFUNCTION()
+		void IsStunStart();
+
+	UFUNCTION()
+		void IsStunEnd();
+
+	UFUNCTION()
 		void IsTravelMode();
 
 	UFUNCTION()
@@ -152,6 +207,12 @@ public:
 
 	UFUNCTION()
 		void StopIntro();
+
+	UFUNCTION()
+		void IntroCantMove();
+
+	UFUNCTION()
+		void IntroCanMove();
 
 	//void PlayerPause();
 };

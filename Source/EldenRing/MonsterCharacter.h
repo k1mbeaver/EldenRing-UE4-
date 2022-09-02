@@ -21,6 +21,12 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		float AttackPower;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float AttackRange;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float AttackRadius;
+
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Speed, Meta = (AllowPrivateAccess = true))
 		float MonsterSpeed;
 
@@ -69,6 +75,9 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 		USceneComponent* IntroParticleMuzzleLocation;
 
+	//UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+		//USceneComponent* AttackParticleLocation;
+
 	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = HP, Meta = (AllowPrivateAccess = true))
 		//class UWidgetComponent* AIWidget;
 
@@ -104,19 +113,21 @@ public:
 
 	virtual void PostInitializeComponents() override;
 
-	// TakeDamage의 경우에도 다시 해보자
-	//float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamasgeCauser) override;
 
 	void Attack();
 	void Skill();
 	void AttackEnd();
 	void SkillEnd();
+	void AttackCheck();
 	//void AttackCheck();
 	//void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	//void AttackByPlayer(float DamageAmount);
+	void MoveMonster();
+	void StopMonster();
 	void StopAIController();
 	void InitializeAI(FString MonsterType);
-	void AttackParticleStart();
+	void AttackParticleStart(FVector StartParticle);
 	void IntroParticleStart();
 	void SkillParticleStart();
 };

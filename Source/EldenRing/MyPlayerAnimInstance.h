@@ -8,13 +8,17 @@
 
 DECLARE_MULTICAST_DELEGATE(FSaveAttack_AttackDelegate); // 공격 시작
 DECLARE_MULTICAST_DELEGATE(FResetCombo_AttackDelegate); // 공격 끝
+DECLARE_MULTICAST_DELEGATE(FAttackCheck_AttackDelegate); // 공격 체크
 DECLARE_MULTICAST_DELEGATE(FStopIntro_AttackDelegate); // 스킬인트로 끝
 DECLARE_MULTICAST_DELEGATE(FEndSKill_AttackDelegate); // 스킬 끝
 DECLARE_MULTICAST_DELEGATE(FTravelMode_StartDelegate); // TravelModeStart 끝
 DECLARE_MULTICAST_DELEGATE(FTravelMode_EndDelegate); // TravelModeEnd 끝
 DECLARE_MULTICAST_DELEGATE(FOnOnCollisonStart_AttackDelegate); // 공격 시작
 DECLARE_MULTICAST_DELEGATE(FOnOnCollisonEnded_AttackDelegate); // 공격 끝
-
+DECLARE_MULTICAST_DELEGATE(FCantMove_StunDelegate); // 기절 시작
+DECLARE_MULTICAST_DELEGATE(FCanMove_StunDelegate); // 기절 끝
+DECLARE_MULTICAST_DELEGATE(FIntroCantMove_IntroDelegate); // 인트로 시작
+DECLARE_MULTICAST_DELEGATE(FIntroCanMove_IntroDelegate); // 인트로 끝
 /**
  * 
  */
@@ -27,11 +31,12 @@ public:
 	UMyPlayerAnimInstance();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void PlayAttackMontage();
-	void PlaySkillMontage();
-	void PlaySkillIntroMontage();
-	void PlayTravelStartMontage();
-	void PlayTravelEndMontage();
+	void PlayAttackMontage(UAnimMontage* GetAttackMontage);
+	void PlaySkillMontage(UAnimMontage* GetAttackMontage);
+	void PlaySkillIntroMontage(UAnimMontage* GetAttackMontage);
+	void PlayTravelStartMontage(UAnimMontage* GetAttackMontage);
+	void PlayTravelEndMontage(UAnimMontage* GetAttackMontage);
+	void PlayStunMontage(UAnimMontage* GetAttackMontage);
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* AttackMontageTypeA;
@@ -57,15 +62,23 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* EndTravelMode;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* StunAnimation;
+
 	FName GetAttackMontageSectionName(int32 Section);
 	void SetDeadAnim();
 
 	FSaveAttack_AttackDelegate SaveAttack_Attack;
 	FResetCombo_AttackDelegate ResetCombo_Attack;
+	FAttackCheck_AttackDelegate AttackCheck_Attack;
 	FEndSKill_AttackDelegate EndSkill_Attack;
 	FStopIntro_AttackDelegate StopIntro_Attack;
 	FTravelMode_StartDelegate Start_Travel;
 	FTravelMode_EndDelegate End_Travel;
+	FCantMove_StunDelegate CantMove_Stun;
+	FCanMove_StunDelegate CanMove_Stun;
+	FIntroCantMove_IntroDelegate IntroCantMove_Intro;
+	FIntroCanMove_IntroDelegate IntroCanMove_Intro;
 
 private:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
@@ -80,12 +93,17 @@ private:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		bool IsTravel;
 
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+		bool IsIntro;
+
 	int nCombo;
 
 	UFUNCTION()
 		void AnimNotify_SaveAttack();
 	UFUNCTION()
 		void AnimNotify_ResetCombo();
+	UFUNCTION()
+		void AnimNotify_AttackCheck();
 	UFUNCTION()
 		void AnimNotify_EndSkill();
 	UFUNCTION()
@@ -94,6 +112,14 @@ private:
 		void AnimNotify_Travel_Start();
 	UFUNCTION()
 		void AnimNotify_Travel_End();
+	UFUNCTION()
+		void AnimNotify_CantMove();
+	UFUNCTION()
+		void AnimNotify_CanMove();
+	UFUNCTION()
+		void AnimNotify_IntroCantMove();
+	UFUNCTION()
+		void AnimNotify_IntroCanMove();
 
 public:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))

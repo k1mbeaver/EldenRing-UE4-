@@ -12,6 +12,7 @@ struct FMonsterDataTable;
 struct FMontageDataTable;
 struct FPlayerDataTable;
 struct FMonsterParticleDataTable;
+struct FPlayerMontageDataTable;
 class UDataTable;
 
 /**
@@ -51,6 +52,18 @@ public:
 	UParticleSystem* GetMonsterSkillParticle(FString MonsterType);
 	UParticleSystem* GetMonsterIntroParticle(FString MonsterType);
 
+	// 플레이어 몽타주, 애니메이션 얻어오기
+	UAnimMontage* GetPlayerAttackAMontage();
+	UAnimMontage* GetPlayerAttackBMontage();
+	UAnimMontage* GetPlayerAttackCMontage();
+	UAnimMontage* GetPlayerAttackDMontage();
+	UAnimMontage* GetPlayerSkillMontage();
+	UAnimMontage* GetPlayerSkillIntroMontage();
+	UAnimMontage* GetPlayerStunMontage();
+	UAnimMontage* GetPlayerStartTravelMontage();
+	UAnimMontage* GetPlayerEndTravelMontage();
+	TSubclassOf<class UAnimInstance> GetPlayerAnimation();
+
 
 	/*
 	FString GetMonsterName(FString MonsterType);
@@ -88,4 +101,7 @@ private:
 
 	UPROPERTY()
 		UDataTable* FMonsterParticleTable;
+
+	UPROPERTY()
+		UDataTable* FPlayerMontageTable;
 };

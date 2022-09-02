@@ -30,10 +30,6 @@ AMonsterController::AMonsterController(FObjectInitializer const& object_initiali
 void AMonsterController::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	MonsterAnim = Cast<UMonsterInstance>(myCharacter->GetMesh()->GetAnimInstance());
-
-	MonsterAnim->StartGame_Intro.AddUObject(this, &AMonsterController::EndIntro);
 
 	//RunBehaviorTree(BTAsset);
 	//BTAsset_Component->StartTree(*BTAsset);
@@ -73,5 +69,4 @@ void AMonsterController::EndIntro() // 여기서 BT를 실행시킨다.
 {
 	RunBehaviorTree(BTAsset);
 	BTAsset_Component->StartTree(*BTAsset);
-	MonsterAnim->IsIntro = false;
 }

@@ -7,6 +7,7 @@
 #include "MontageDataTableClass.h"
 #include "PlayerDataTableClass.h"
 #include "MonsterParticleDataTableClass.h"
+#include "PlayerMontageDataTableClass.h"
 
 UEldenRingGameInstance::UEldenRingGameInstance()
 {
@@ -15,6 +16,7 @@ UEldenRingGameInstance::UEldenRingGameInstance()
 	FString MontageDataPath = TEXT("DataTable'/Game/DataTable/MontageData.MontageData'");
 	FString PlayerDataPath = TEXT("DataTable'/Game/DataTable/PlayerData.PlayerData'");
 	FString MonsterParticleDataPath = TEXT("DataTable'/Game/DataTable/MonsterParticleData.MonsterParticleData'");
+	FString PlayerMontageDataPath = TEXT("DataTable'/Game/DataTable/PlayerMontageData.PlayerMontageData'");
 
 	//E:/Unreal/ZombieShooting/Content/File/Json/PlayerData.uasset
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ABPLAYERFILE(*PlayerFileDataPath);
@@ -50,6 +52,13 @@ UEldenRingGameInstance::UEldenRingGameInstance()
 	if (DT_ABMONSERPARTICLE.Succeeded())
 	{
 		FMonsterParticleTable = DT_ABMONSERPARTICLE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ABPLAYERMONTAGE(*PlayerMontageDataPath);
+
+	if (DT_ABPLAYERMONTAGE.Succeeded())
+	{
+		FPlayerMontageTable = DT_ABPLAYERMONTAGE.Object;
 	}
 }
 
@@ -163,4 +172,74 @@ UParticleSystem* UEldenRingGameInstance::GetMonsterIntroParticle(FString Monster
 	FMonsterParticleDataTable* ParticleData = FMonsterParticleTable->FindRow<FMonsterParticleDataTable>(*MonsterType, TEXT(""));
 	UParticleSystem* myParticle = ParticleData->MonsterIntro;
 	return myParticle;
+}
+
+UAnimMontage* UEldenRingGameInstance::GetPlayerAttackAMontage()
+{
+	FPlayerMontageDataTable* MontageData = FPlayerMontageTable->FindRow<FPlayerMontageDataTable>("Player", TEXT(""));
+	UAnimMontage* myMontage = MontageData->AttackMontageTypeA;
+	return myMontage;
+}
+
+UAnimMontage* UEldenRingGameInstance::GetPlayerAttackBMontage()
+{
+	FPlayerMontageDataTable* MontageData = FPlayerMontageTable->FindRow<FPlayerMontageDataTable>("Player", TEXT(""));
+	UAnimMontage* myMontage = MontageData->AttackMontageTypeB;
+	return myMontage;
+}
+
+UAnimMontage* UEldenRingGameInstance::GetPlayerAttackCMontage()
+{
+	FPlayerMontageDataTable* MontageData = FPlayerMontageTable->FindRow<FPlayerMontageDataTable>("Player", TEXT(""));
+	UAnimMontage* myMontage = MontageData->AttackMontageTypeC;
+	return myMontage;
+}
+
+UAnimMontage* UEldenRingGameInstance::GetPlayerAttackDMontage()
+{
+	FPlayerMontageDataTable* MontageData = FPlayerMontageTable->FindRow<FPlayerMontageDataTable>("Player", TEXT(""));
+	UAnimMontage* myMontage = MontageData->AttackMontageTypeD;
+	return myMontage;
+}
+
+UAnimMontage* UEldenRingGameInstance::GetPlayerSkillMontage()
+{
+	FPlayerMontageDataTable* MontageData = FPlayerMontageTable->FindRow<FPlayerMontageDataTable>("Player", TEXT(""));
+	UAnimMontage* myMontage = MontageData->SkillMontage;
+	return myMontage;
+}
+
+UAnimMontage* UEldenRingGameInstance::GetPlayerSkillIntroMontage()
+{
+	FPlayerMontageDataTable* MontageData = FPlayerMontageTable->FindRow<FPlayerMontageDataTable>("Player", TEXT(""));
+	UAnimMontage* myMontage = MontageData->SkillIntroMontage;
+	return myMontage;
+}
+
+UAnimMontage* UEldenRingGameInstance::GetPlayerEndTravelMontage()
+{
+	FPlayerMontageDataTable* MontageData = FPlayerMontageTable->FindRow<FPlayerMontageDataTable>("Player", TEXT(""));
+	UAnimMontage* myMontage = MontageData->EndTravelMontage;
+	return myMontage;
+}
+
+UAnimMontage* UEldenRingGameInstance::GetPlayerStartTravelMontage()
+{
+	FPlayerMontageDataTable* MontageData = FPlayerMontageTable->FindRow<FPlayerMontageDataTable>("Player", TEXT(""));
+	UAnimMontage* myMontage = MontageData->StartTravelMontage;
+	return myMontage;
+}
+
+UAnimMontage* UEldenRingGameInstance::GetPlayerStunMontage()
+{
+	FPlayerMontageDataTable* MontageData = FPlayerMontageTable->FindRow<FPlayerMontageDataTable>("Player", TEXT(""));
+	UAnimMontage* myMontage = MontageData->StunMontage;
+	return myMontage;
+}
+
+TSubclassOf<class UAnimInstance> UEldenRingGameInstance::GetPlayerAnimation()
+{
+	FPlayerMontageDataTable* AnimationData = FPlayerMontageTable->FindRow<FPlayerMontageDataTable>("Player", TEXT(""));
+	TSubclassOf<class UAnimInstance> myAnimation = AnimationData->MyAnimation;
+	return myAnimation;
 }
