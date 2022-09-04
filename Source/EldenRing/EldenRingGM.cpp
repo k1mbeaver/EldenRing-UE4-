@@ -3,6 +3,7 @@
 
 #include "EldenRingGM.h"
 #include "MyPlayerController.h"
+#include "PlayerUI_HUD.h"
 #include "PlayerCharacter.h"
 
 AEldenRingGM::AEldenRingGM()
@@ -19,7 +20,7 @@ AEldenRingGM::AEldenRingGM()
 	PlayerControllerClass = AMyPlayerController::StaticClass();
 
 	// use our custom HUD class
-	//HUDClass = APlayerInterface_HUD::StaticClass();
+	HUDClass = APlayerUI_HUD::StaticClass();
 }
 
 void AEldenRingGM::PostLogin(APlayerController* NewPlayer)

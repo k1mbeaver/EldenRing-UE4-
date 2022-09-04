@@ -54,6 +54,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HP)
 		float fMaxHp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MP)
+		float fPlayerMp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MP)
+		float fMaxMp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stamina)
+		float fPlayerStamina;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stamina)
+		float fMaxStamina;
+
 	/** AnimMontage to play each time we fire */
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	//UAnimMontage* FireAnimation;
@@ -84,6 +96,9 @@ public:
 		bool bIsRun;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		bool bRunning;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bPlayerPause;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
@@ -94,6 +109,9 @@ public:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bSkill;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		bool bCanSkill;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bTravel;
@@ -135,6 +153,8 @@ public:
 	UPROPERTY(VisibleInstanceOnly, Category = Animation)
 		class UMyPlayerAnimInstance* PlayerAnim;
 
+	UPROPERTY(VisibleInstanceOnly, Category = HUD)
+		class APlayerUI_HUD* TestHUD;
 private:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))

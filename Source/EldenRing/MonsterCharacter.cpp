@@ -11,6 +11,7 @@
 #include "PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
+#include "PlayerUI_HUD.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -189,11 +190,9 @@ float AMonsterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	fAIHp -= FinalDamage;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Attack!"));
 
-	//APlayerInterface_HUD* HUD = Cast<APlayerInterface_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+	APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
 
-	float fCurrentHP = fAIHp / fMaxHp;
-
-	//HUD->SetPlayerHP(fCurrentHP);
+	HUD->SetMonsterHP(fAIHp / fMaxHp);
 
 	if (fAIHp < 0) // 피가 다 까이면
 	{

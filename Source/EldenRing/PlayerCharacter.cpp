@@ -14,6 +14,7 @@
 #include "MyPlayerAnimInstance.h"
 #include "MyPlayerController.h"
 #include "MonsterCharacter.h"
+#include "PlayerUI_HUD.h"
 #include "EldenRingGM.h"
 #include "DrawDebugHelpers.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
@@ -71,11 +72,15 @@ APlayerCharacter::APlayerCharacter()
 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("ProjectPlayer"));
 
-	fMaxHp = 10000.0f;
-	fPlayerHp = 10000.0f;
+	fMaxHp = 500.0f;
+	fPlayerHp = 500.0f;
+	fMaxMp = 100.0f;
+	fPlayerMp = 100.0f;
+	fMaxStamina = 100.0f;
+	fPlayerStamina = 100.0f;
 	AttackRange = 250.0f;
 	AttackRadius = 50.0f;
-	AttackPower = 10000.0f; // 나중에 파워 설정 ㄱ
+	AttackPower = 50.0f; // 나중에 파워 설정 ㄱ
 
 	//nSpecialGunBullet = 30;
 
@@ -85,6 +90,8 @@ APlayerCharacter::APlayerCharacter()
 	bIsPlayerControlled = false;
 	bAttack = true;
 	bTravel = false;
+	bCanSkill = true;
+	bRunning = false;
 	//myGun = EGunState::BASIC;
 }
 
@@ -127,6 +134,8 @@ void APlayerCharacter::BeginPlay()
 	PlayerAnim->SaveAttack_Attack.AddUObject(this, &APlayerCharacter::SaveCombo);
 	PlayerAnim->ResetCombo_Attack.AddUObject(this, &APlayerCharacter::ResetCombo);
 
+	TestHUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+
 	bIsRun = false;// 시작할 때 달리기 느려지는 오류 대처
 }
 
@@ -134,6 +143,23 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bRunning)
+	{
+		fPlayerStamina -= 0.1f;
+		TestHUD->SetPlayerStamina(fPlayerStamina / fMaxStamina);
+	}
+
+	if (fPlayerStamina <= 0.0f)
+	{
+		bRunning = false;
+		bIsRun = false;
+	}
+
+	if (fPlayerMp <= 0.0f)
+	{
+		bCanSkill = false;
+	}
 
 	//Camera->SetRelativeLocation(CameraOffset);
 }
@@ -255,6 +281,7 @@ void APlayerCharacter::Attack()
 		{
 			AnimInstance->PlayAttackMontage(AttackDMontage);
 		}
+		bAttack = false;
 	}
 }
 
@@ -311,10 +338,17 @@ void APlayerCharacter::Skill()
 	// 공격 애니메이션 실행
 	//CharacterAnim->PlayAttackMontage();
 
-	if (bCanMove)
+	if (bCanMove && bCanSkill)
 	{
 		bCanMove = false;
 		bAttack = false;
+		bIsRun = false;
+		
+		fPlayerMp -= 10.0f;
+
+		APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+
+		HUD->SetPlayerMP(fPlayerMp / fMaxMp);
 
 		auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 		if (nullptr == AnimInstance) return;
@@ -328,11 +362,13 @@ void APlayerCharacter::Skill()
 void APlayerCharacter::SaveCombo()
 {
 	nCombo++;
+	bAttack = true;
 }
 
 void APlayerCharacter::ResetCombo()
 {
 	nCombo = 0;
+	bAttack = true;
 }
 
 void APlayerCharacter::StopSkillIntro()
@@ -357,6 +393,14 @@ void APlayerCharacter::StopIntro()
 {
 	bCanMove = true;
 	bSkill = false;
+
+	// MP 일정 돌려주기
+	fPlayerMp += 5.0f;
+
+	APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+
+	HUD->SetPlayerMP(fPlayerMp / fMaxMp);
+
 	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 }
 
@@ -404,19 +448,39 @@ void APlayerCharacter::IsTravelMode()
 
 void APlayerCharacter::Run()
 {
-	if (bCanMove)
+	if (bIsRun)
 	{
 		GetCharacterMovement()->MaxWalkSpeed *= 2;
-		//bIsRun = true;
+		bRunning = true;
+	}
+
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+		
+		if (bTravel)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+		}
 	}
 }
 
 void APlayerCharacter::StopRun()
 {
-	if (bCanMove)
+	if (bIsRun)
 	{
 		GetCharacterMovement()->MaxWalkSpeed /= 2;
-		//bIsRun = false;
+		bRunning = false;
+	}
+
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+
+		if (bTravel)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+		}
 	}
 }
 
@@ -452,13 +516,11 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	fPlayerHp -= FinalDamage;
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Attack!"));
 
-	//APlayerInterface_HUD* HUD = Cast<APlayerInterface_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+	APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
 
-	float fCurrentHP = fPlayerHp / fMaxHp;
+	HUD->SetPlayerHP(fPlayerHp / fMaxHp);
 
-	//HUD->SetPlayerHP(fCurrentHP);
-
-	if (fPlayerHp < 0) // 피가 다 까이면
+	if (fPlayerHp <= 0.0f) // 피가 다 까이면
 	{
 		PlayerAnim->SetDeadAnim();
 
@@ -485,6 +547,7 @@ void APlayerCharacter::IntroCantMove()
 	bCanMove = false;
 	bAttack = false;
 	bSkill = false;
+	bIsRun = false;
 }
 
 void APlayerCharacter::IntroCanMove()
@@ -492,5 +555,6 @@ void APlayerCharacter::IntroCanMove()
 	bCanMove = true;
 	bAttack = true;
 	bSkill = true;
+	bIsRun = true;
 }
 
