@@ -8,6 +8,7 @@
 #include "PlayerDataTableClass.h"
 #include "MonsterParticleDataTableClass.h"
 #include "PlayerMontageDataTableClass.h"
+#include "ImageDataTableClass.h"
 
 UEldenRingGameInstance::UEldenRingGameInstance()
 {
@@ -17,6 +18,7 @@ UEldenRingGameInstance::UEldenRingGameInstance()
 	FString PlayerDataPath = TEXT("DataTable'/Game/DataTable/PlayerData.PlayerData'");
 	FString MonsterParticleDataPath = TEXT("DataTable'/Game/DataTable/MonsterParticleData.MonsterParticleData'");
 	FString PlayerMontageDataPath = TEXT("DataTable'/Game/DataTable/PlayerMontageData.PlayerMontageData'");
+	FString ImageDataPath = TEXT("DataTable'/Game/DataTable/ImageData.ImageData'");
 
 	//E:/Unreal/ZombieShooting/Content/File/Json/PlayerData.uasset
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ABPLAYERFILE(*PlayerFileDataPath);
@@ -59,6 +61,13 @@ UEldenRingGameInstance::UEldenRingGameInstance()
 	if (DT_ABPLAYERMONTAGE.Succeeded())
 	{
 		FPlayerMontageTable = DT_ABPLAYERMONTAGE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_IMAGE(*ImageDataPath);
+
+	if (DT_IMAGE.Succeeded())
+	{
+		FImageTable = DT_IMAGE.Object;
 	}
 }
 
@@ -242,4 +251,11 @@ TSubclassOf<class UAnimInstance> UEldenRingGameInstance::GetPlayerAnimation()
 	FPlayerMontageDataTable* AnimationData = FPlayerMontageTable->FindRow<FPlayerMontageDataTable>("Player", TEXT(""));
 	TSubclassOf<class UAnimInstance> myAnimation = AnimationData->MyAnimation;
 	return myAnimation;
+}
+
+TSoftObjectPtr<UTexture> UEldenRingGameInstance::GetImage(FString ImageType)
+{
+	FImageDataTable* ImageData = FImageTable->FindRow<FImageDataTable>(*ImageType, TEXT(""));
+	TSoftObjectPtr<UTexture> myImage = ImageData->MyImage;
+	return myImage;
 }

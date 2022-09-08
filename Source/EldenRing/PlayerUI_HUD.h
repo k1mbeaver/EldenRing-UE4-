@@ -23,7 +23,8 @@ public:
 	void SetPlayerMP(float fCurrent);
 	void SetPlayerStamina(float fCurrent);
 	void SetMonsterHP(float fCurrent);
-	void SetMonsterName(FString MonsterName);
+	void SetMonsterName(FString strMonsterName);
+	void SetMonsterVisible();
 
 private:
 	TSubclassOf<class UPlayerUIMain_UW> MainUIClass;

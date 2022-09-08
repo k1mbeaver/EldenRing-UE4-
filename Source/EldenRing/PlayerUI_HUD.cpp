@@ -72,3 +72,8 @@ void APlayerUI_HUD::SetMonsterName(FString strMonsterName)
 {
 	MainUIObject->SetMonsterName(strMonsterName);
 }
+
+void APlayerUI_HUD::SetMonsterVisible()
+{
+	MainUIObject->SetMonsterVisible();
+}

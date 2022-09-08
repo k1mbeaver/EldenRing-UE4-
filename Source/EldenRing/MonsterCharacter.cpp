@@ -303,6 +303,11 @@ void AMonsterCharacter::MoveMonster()
 
 	AIController->EndIntro();
 
+	APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+
+	HUD->SetMonsterName(strMonsterType);
+	HUD->SetMonsterVisible();
+
 	MonsterAnim->IsIntro = false;
 }
 

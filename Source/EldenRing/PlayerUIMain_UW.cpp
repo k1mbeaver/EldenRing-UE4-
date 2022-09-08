@@ -28,3 +28,8 @@ void UPlayerUIMain_UW::SetMonsterName(FString strMonsterName)
 {
 	PlayerUI_WB->SetMonsterName(strMonsterName);
 }
+
+void UPlayerUIMain_UW::SetMonsterVisible()
+{
+	PlayerUI_WB->SetMonsterVisible();
+}

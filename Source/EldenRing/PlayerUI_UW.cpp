@@ -45,3 +45,10 @@ void UPlayerUI_UW::SetMonsterName(FString strMonsterName)
 	MonsterName->SetText(ftMonsterName);
 }
 
+void UPlayerUI_UW::SetMonsterVisible()
+{
+	MonsterName->SetVisibility(ESlateVisibility::Visible);
+	MonsterHPBar->SetVisibility(ESlateVisibility::Visible);
+	MonsterHPBarImage->SetVisibility(ESlateVisibility::Visible);
+}
+

@@ -36,6 +36,24 @@ private:
 	UPROPERTY(Meta = (BindWidget))
 		class UImage* MonsterHPBarImage;
 
+	UPROPERTY(Meta = (BindWidget))
+		class UImage* ImageFillOne;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UImage* ImageFillTwo;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UImage* ImageFillThree;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UTextBlock* TextFillOne;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UTextBlock* TextFillTwo;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UTextBlock* TextFillThree;
+
 protected:
 	virtual void NativeOnInitialized() override;
 	//virtual void NativeConstruct() override;
@@ -45,5 +63,6 @@ public:
 	void SetPlayerMP(float fCurrent);
 	void SetPlayerStamina(float fCurrent);
 	void SetMonsterHP(float fCurrent);
-	void SetMonsterName(FString MonsterName);
+	void SetMonsterName(FString strMonsterName);
+	void SetMonsterVisible();
 };
