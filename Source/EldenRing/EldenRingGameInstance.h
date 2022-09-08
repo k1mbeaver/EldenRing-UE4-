@@ -13,7 +13,6 @@ struct FMontageDataTable;
 struct FPlayerDataTable;
 struct FMonsterParticleDataTable;
 struct FPlayerMontageDataTable;
-struct FImageDataTable;
 class UDataTable;
 
 /**
@@ -65,9 +64,6 @@ public:
 	UAnimMontage* GetPlayerEndTravelMontage();
 	TSubclassOf<class UAnimInstance> GetPlayerAnimation();
 
-	// 이미지 얻어오기
-	TSoftObjectPtr<UTexture> GetImage(FString ImageType);
-
 
 	/*
 	FString GetMonsterName(FString MonsterType);
@@ -108,7 +104,4 @@ private:
 
 	UPROPERTY()
 		UDataTable* FPlayerMontageTable;
-
-	UPROPERTY()
-		UDataTable* FImageTable;
 };
