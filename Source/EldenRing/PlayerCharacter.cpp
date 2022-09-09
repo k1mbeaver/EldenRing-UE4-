@@ -110,6 +110,8 @@ void APlayerCharacter::BeginPlay()
 	GetMesh()->SetSkeletalMesh(MyGI->GetPlayerSkeletalMesh("Default"));
 	GetMesh()->SetAnimInstanceClass(MyGI->GetPlayerAnimation());
 
+	
+
 	AttackAMontage = MyGI->GetPlayerAttackAMontage();
 	AttackBMontage = MyGI->GetPlayerAttackBMontage();
 	AttackCMontage = MyGI->GetPlayerAttackCMontage();
@@ -136,6 +138,9 @@ void APlayerCharacter::BeginPlay()
 
 	TestHUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
 
+	TestHUD->SetPotionAmount(HpPotion.PotionType, HpPotion.PotionAmount);
+	TestHUD->SetPotionAmount(MpPotion.PotionType, MpPotion.PotionAmount);
+	TestHUD->SetPotionAmount(StaminaPotion.PotionType, StaminaPotion.PotionAmount);
 	bIsRun = false;// 시작할 때 달리기 느려지는 오류 대처
 }
 
@@ -482,6 +487,85 @@ void APlayerCharacter::StopRun()
 			GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 		}
 	}
+}
+
+void APlayerCharacter::HpDrink()
+{
+	if (HpPotion.PotionAmount == 0)
+	{
+		return;
+	}
+
+	if (fPlayerHp >= 100.0f)
+	{
+		fPlayerHp = 100.0f;
+		return;
+	}
+
+	fPlayerHp += 30.0f;
+
+	HpPotion.PotionAmount -= 1;
+
+	APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+
+	HUD->SetPlayerHP(fPlayerHp / fMaxHp);
+	HUD->SetPotionAmount("HP", HpPotion.PotionAmount);
+}
+
+void APlayerCharacter::MpDrink()
+{
+	if (MpPotion.PotionAmount == 0)
+	{
+		return;
+	}
+
+	if (fPlayerMp >= 100.0f)
+	{
+		fPlayerMp = 100.0f;
+		return;
+	}
+
+	if (fPlayerMp <= 0.0f)
+	{
+		bCanSkill = true;
+	}
+
+	fPlayerMp += 30.0f;
+
+	MpPotion.PotionAmount -= 1;
+
+	APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+
+	HUD->SetPlayerMP(fPlayerMp / fMaxMp);
+	HUD->SetPotionAmount("MP", MpPotion.PotionAmount);
+}
+
+void APlayerCharacter::StaminaDrink()
+{
+	if (StaminaPotion.PotionAmount == 0)
+	{
+		return;
+	}
+
+	if (fPlayerStamina >= 100.0f)
+	{
+		fPlayerStamina = 100.0f;
+		return;
+	}
+
+	if (fPlayerStamina <= 0.0f)
+	{
+		bIsRun = true;
+	}
+
+	fPlayerStamina += 30.0f;
+
+	StaminaPotion.PotionAmount -= 1;
+
+	APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+
+	HUD->SetPlayerStamina(fPlayerStamina / fMaxStamina);
+	HUD->SetPotionAmount("Stamina", StaminaPotion.PotionAmount);
 }
 
 void APlayerCharacter::IsStunStart()

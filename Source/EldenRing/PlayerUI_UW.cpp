@@ -5,6 +5,7 @@
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
+#include "EldenRingGameInstance.h"
 
 void UPlayerUI_UW::NativeOnInitialized()
 {
@@ -17,6 +18,12 @@ void UPlayerUI_UW::NativeOnInitialized()
 	MonsterHPBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("MonsterHPBar")));
 	PlayerImage = Cast<UImage>(GetWidgetFromName(TEXT("PlayerImage")));
 	MonsterHPBarImage = Cast<UImage>(GetWidgetFromName(TEXT("MonsterHPBarImage")));
+	ImageFillOne = Cast<UImage>(GetWidgetFromName(TEXT("ImageFillOne")));
+	ImageFillTwo = Cast<UImage>(GetWidgetFromName(TEXT("ImageFillTwo")));
+	ImageFillThree = Cast<UImage>(GetWidgetFromName(TEXT("ImageFillThree")));
+	TextFillOne = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextFillOne")));
+	TextFillTwo = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextFillTwo")));
+	TextFillThree = Cast<UTextBlock>(GetWidgetFromName(TEXT("TextFillThree")));
 }
 
 void UPlayerUI_UW::SetPlayerHP(float fCurrent)
@@ -50,5 +57,29 @@ void UPlayerUI_UW::SetMonsterVisible()
 	MonsterName->SetVisibility(ESlateVisibility::Visible);
 	MonsterHPBar->SetVisibility(ESlateVisibility::Visible);
 	MonsterHPBarImage->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UPlayerUI_UW::SetPotionAmount(FString strPotionType, int nAmount)
+{
+	if (strPotionType == "HP")
+	{
+		FString nToString = FString::FromInt(nAmount);
+		FText strToft = FText::FromString(nToString);
+		TextFillOne->SetText(strToft);
+	}
+
+	else if (strPotionType == "MP")
+	{
+		FString nToString = FString::FromInt(nAmount);
+		FText strToft = FText::FromString(nToString);
+		TextFillTwo->SetText(strToft);
+	}
+
+	else if (strPotionType == "Stamina")
+	{
+		FString nToString = FString::FromInt(nAmount);
+		FText strToft = FText::FromString(nToString);
+		TextFillThree->SetText(strToft);
+	}
 }
 

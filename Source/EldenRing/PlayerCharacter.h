@@ -6,6 +6,12 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+struct Potion
+{
+	FString PotionType = "Null";
+	int PotionAmount = 0;
+};
+
 UCLASS()
 class ELDENRING_API APlayerCharacter : public ACharacter
 {
@@ -122,6 +128,10 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		FVector CameraOffset;
 
+	Potion HpPotion = { "HP", 5 };
+	Potion MpPotion = { "MP", 5 };
+	Potion StaminaPotion = { "Stamina", 5 };
+
 	//UPROPERTY()
 		//class UParticleSystem* AttackParticle;
 
@@ -206,6 +216,12 @@ public:
 	void StopSkillIntro();
 
 	void TravelMode();
+
+	void HpDrink();
+
+	void MpDrink();
+
+	void StaminaDrink();
 
 	UFUNCTION()
 		void SaveCombo();

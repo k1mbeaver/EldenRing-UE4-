@@ -49,5 +49,11 @@ private:
 
 	void TravelMode();
 
+	void HpDrink();
+
+	void MpDrink();
+
+	void StaminaDrink();
+
 	//void PlayerPause();
 };

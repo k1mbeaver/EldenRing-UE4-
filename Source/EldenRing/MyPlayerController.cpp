@@ -60,6 +60,10 @@ void AMyPlayerController::SetupInputComponent()
 	// 캐릭터 자유이동 함수
 	InputComponent->BindAction("TravelMode", IE_Pressed, this, &AMyPlayerController::TravelMode);
 
+	// 캐릭터 아이템 사용 함수
+	InputComponent->BindAction("HPDrink", IE_Pressed, this, &AMyPlayerController::HpDrink);
+	InputComponent->BindAction("MPDrink", IE_Pressed, this, &AMyPlayerController::MpDrink);
+	InputComponent->BindAction("StaminaDrink", IE_Pressed, this, &AMyPlayerController::StaminaDrink);
 
 	// 플레이어 일시정지 함수
 	//InputComponent->BindAction("Pause", IE_Pressed, this, &AMyPlayerController::PlayerPause);
@@ -170,6 +174,33 @@ void AMyPlayerController::StopRun()
 	if (myCharacter != nullptr)
 	{
 		myCharacter->StopRun();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("StopRun!"));
+	}
+}
+
+void AMyPlayerController::HpDrink()
+{
+	if (myCharacter != nullptr)
+	{
+		myCharacter->HpDrink();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("StopRun!"));
+	}
+}
+
+void AMyPlayerController::MpDrink()
+{
+	if (myCharacter != nullptr)
+	{
+		myCharacter->MpDrink();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("StopRun!"));
+	}
+}
+
+void AMyPlayerController::StaminaDrink()
+{
+	if (myCharacter != nullptr)
+	{
+		myCharacter->StaminaDrink();
 		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("StopRun!"));
 	}
 }
