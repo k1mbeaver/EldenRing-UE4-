@@ -10,6 +10,8 @@ DECLARE_MULTICAST_DELEGATE(FSaveAttack_AttackDelegate); // 공격 시작
 DECLARE_MULTICAST_DELEGATE(FResetCombo_AttackDelegate); // 공격 끝
 DECLARE_MULTICAST_DELEGATE(FAttackCheck_AttackDelegate); // 공격 체크
 DECLARE_MULTICAST_DELEGATE(FStopIntro_AttackDelegate); // 스킬인트로 끝
+DECLARE_MULTICAST_DELEGATE(FSkillPartile_AttackDelegate); // 스킬 파티클
+DECLARE_MULTICAST_DELEGATE(FSkillCheck_AttackDelegate); // 스킬 공격 체크
 DECLARE_MULTICAST_DELEGATE(FEndSKill_AttackDelegate); // 스킬 끝
 DECLARE_MULTICAST_DELEGATE(FTravelMode_StartDelegate); // TravelModeStart 끝
 DECLARE_MULTICAST_DELEGATE(FTravelMode_EndDelegate); // TravelModeEnd 끝
@@ -18,6 +20,8 @@ DECLARE_MULTICAST_DELEGATE(FOnOnCollisonEnded_AttackDelegate); // 공격 끝
 DECLARE_MULTICAST_DELEGATE(FCantMove_StunDelegate); // 기절 시작
 DECLARE_MULTICAST_DELEGATE(FCanMove_StunDelegate); // 기절 끝
 DECLARE_MULTICAST_DELEGATE(FIntroCantMove_IntroDelegate); // 인트로 시작
+DECLARE_MULTICAST_DELEGATE(FIntroSwordParticle_IntroDelegate); // 인트로 Sword 파티클 시작
+DECLARE_MULTICAST_DELEGATE(FIntroParticle_IntroDelegate); // 인트로 파티클 시작
 DECLARE_MULTICAST_DELEGATE(FIntroCanMove_IntroDelegate); // 인트로 끝
 /**
  * 
@@ -72,6 +76,7 @@ public:
 	FResetCombo_AttackDelegate ResetCombo_Attack;
 	FAttackCheck_AttackDelegate AttackCheck_Attack;
 	FEndSKill_AttackDelegate EndSkill_Attack;
+	FSkillPartile_AttackDelegate SkillParticle_Attack;
 	FStopIntro_AttackDelegate StopIntro_Attack;
 	FTravelMode_StartDelegate Start_Travel;
 	FTravelMode_EndDelegate End_Travel;
@@ -79,6 +84,10 @@ public:
 	FCanMove_StunDelegate CanMove_Stun;
 	FIntroCantMove_IntroDelegate IntroCantMove_Intro;
 	FIntroCanMove_IntroDelegate IntroCanMove_Intro;
+	FIntroParticle_IntroDelegate IntroParticle_Intro;
+	FIntroSwordParticle_IntroDelegate IntroSwordParticle_Intro;
+	FSkillCheck_AttackDelegate SkillCheck_Attack;
+
 
 private:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
@@ -120,6 +129,14 @@ private:
 		void AnimNotify_IntroCantMove();
 	UFUNCTION()
 		void AnimNotify_IntroCanMove();
+	UFUNCTION()
+		void AnimNotify_IntroParticle();
+	UFUNCTION()
+		void AnimNotify_IntroSwordParticle();
+	UFUNCTION()
+		void AnimNotify_SkillParticle();
+	UFUNCTION()
+		void AnimNotify_SkillCheck();
 
 public:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))

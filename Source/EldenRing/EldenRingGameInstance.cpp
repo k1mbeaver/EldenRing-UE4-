@@ -9,6 +9,7 @@
 #include "MonsterParticleDataTableClass.h"
 #include "PlayerMontageDataTableClass.h"
 #include "ImageDataTableClass.h"
+#include "SoundDataTableClass.h"
 
 UEldenRingGameInstance::UEldenRingGameInstance()
 {
@@ -19,6 +20,7 @@ UEldenRingGameInstance::UEldenRingGameInstance()
 	FString MonsterParticleDataPath = TEXT("DataTable'/Game/DataTable/MonsterParticleData.MonsterParticleData'");
 	FString PlayerMontageDataPath = TEXT("DataTable'/Game/DataTable/PlayerMontageData.PlayerMontageData'");
 	FString ImageDataPath = TEXT("DataTable'/Game/DataTable/ImageData.ImageData'");
+	FString SoundDataPath = TEXT("DataTable'/Game/DataTable/SoundData.SoundData'");
 
 	//E:/Unreal/ZombieShooting/Content/File/Json/PlayerData.uasset
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ABPLAYERFILE(*PlayerFileDataPath);
@@ -68,6 +70,13 @@ UEldenRingGameInstance::UEldenRingGameInstance()
 	if (DT_IMAGE.Succeeded())
 	{
 		FImageTable = DT_IMAGE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SOUND(*SoundDataPath);
+
+	if (DT_SOUND.Succeeded())
+	{
+		FSoundTable = DT_SOUND.Object;
 	}
 }
 
@@ -176,6 +185,13 @@ UParticleSystem* UEldenRingGameInstance::GetMonsterSkillParticle(FString Monster
 	return myParticle;
 }
 
+UParticleSystem* UEldenRingGameInstance::GetMonsterSkillSpareParticle(FString MonsterType)
+{
+	FMonsterParticleDataTable* ParticleData = FMonsterParticleTable->FindRow<FMonsterParticleDataTable>(*MonsterType, TEXT(""));
+	UParticleSystem* myParticle = ParticleData->MonsterSkillSpare;
+	return myParticle;
+}
+
 UParticleSystem* UEldenRingGameInstance::GetMonsterIntroParticle(FString MonsterType)
 {
 	FMonsterParticleDataTable* ParticleData = FMonsterParticleTable->FindRow<FMonsterParticleDataTable>(*MonsterType, TEXT(""));
@@ -258,4 +274,32 @@ TSoftObjectPtr<UTexture> UEldenRingGameInstance::GetImage(FString ImageType)
 	FImageDataTable* ImageData = FImageTable->FindRow<FImageDataTable>(*ImageType, TEXT(""));
 	TSoftObjectPtr<UTexture> myImage = ImageData->MyImage;
 	return myImage;
+}
+
+UParticleSystem* UEldenRingGameInstance::GetPlayerIntroParticle()
+{
+	FPlayerFileDataTable* ParticleData = FPlayerFileTable->FindRow<FPlayerFileDataTable>("Default", TEXT(""));
+	UParticleSystem* PlayerParticle = ParticleData->PlayerIntroParticle;
+	return PlayerParticle;
+}
+
+UParticleSystem* UEldenRingGameInstance::GetPlayerIntroSwordParticle()
+{
+	FPlayerFileDataTable* ParticleData = FPlayerFileTable->FindRow<FPlayerFileDataTable>("Default", TEXT(""));
+	UParticleSystem* PlayerParticle = ParticleData->PlayerIntroSwordParticle;
+	return PlayerParticle;
+}
+
+UParticleSystem* UEldenRingGameInstance::GetPlayerSkillParticle()
+{
+	FPlayerFileDataTable* ParticleData = FPlayerFileTable->FindRow<FPlayerFileDataTable>("Default", TEXT(""));
+	UParticleSystem* PlayerParticle = ParticleData->PlayerSkillParticle;
+	return PlayerParticle;
+}
+
+USoundWave* UEldenRingGameInstance::GetSound(FString TypeName)
+{
+	FSoundDataTable* SoundData = FSoundTable->FindRow<FSoundDataTable>(*TypeName, TEXT(""));
+	USoundWave* MySound = SoundData->MySound;
+	return MySound;
 }

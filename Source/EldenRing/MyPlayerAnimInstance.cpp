@@ -195,3 +195,23 @@ void UMyPlayerAnimInstance::AnimNotify_IntroCanMove()
 	IntroCanMove_Intro.Broadcast();
 	IsIntro = false;
 }
+
+void UMyPlayerAnimInstance::AnimNotify_IntroParticle()
+{
+	IntroParticle_Intro.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_IntroSwordParticle()
+{
+	IntroSwordParticle_Intro.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_SkillParticle()
+{
+	SkillParticle_Attack.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_SkillCheck()
+{
+	SkillCheck_Attack.Broadcast();
+}

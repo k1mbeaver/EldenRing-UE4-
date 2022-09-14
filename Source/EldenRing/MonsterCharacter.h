@@ -130,4 +130,5 @@ public:
 	void AttackParticleStart(FVector StartParticle);
 	void IntroParticleStart();
 	void SkillParticleStart();
+	void SkillParticleEnd();
 };

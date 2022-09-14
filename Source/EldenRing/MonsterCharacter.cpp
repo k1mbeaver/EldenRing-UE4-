@@ -82,7 +82,7 @@ void AMonsterCharacter::BeginPlay()
 	case 0:
 		strMonsterType = "Grux";
 		IntroParticleMuzzleLocation->SetRelativeLocation(FVector(0.0f, 0.0f, -70.0f));
-		ParticleMuzzleLocation->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		ParticleMuzzleLocation->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
 		break;
 		
 	case 1:
@@ -94,13 +94,13 @@ void AMonsterCharacter::BeginPlay()
 	case 2:
 		strMonsterType = "Rampage";
 		IntroParticleMuzzleLocation->SetRelativeLocation(FVector(10.0f, 0.0f, 50.0f));
-		ParticleMuzzleLocation->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		ParticleMuzzleLocation->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
 		break;
 
 	case 3:
 		strMonsterType = "Sevarog";
 		IntroParticleMuzzleLocation->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-		ParticleMuzzleLocation->SetRelativeLocation(FVector(140.0f, 0.0f, 30.0f));
+		ParticleMuzzleLocation->SetRelativeLocation(FVector(0.0, 0.0f, -90.0f));
 		break;
 	}
 	
@@ -277,6 +277,7 @@ void AMonsterCharacter::InitializeAI(FString MonsterType)
 	MonsterAnim->StartSkillParticle_Particle.AddUObject(this, &AMonsterCharacter::SkillParticleStart);
 	MonsterAnim->StartGame_Intro.AddUObject(this, &AMonsterCharacter::MoveMonster);
 	MonsterAnim->StopMonster_Death.AddUObject(this, &AMonsterCharacter::StopMonster);
+	MonsterAnim->EndSkillParticle_Particle.AddUObject(this, &AMonsterCharacter::SkillParticleEnd);
 
 	// 인트로 모션 시작
 	MonsterAnim->PlayIntroMontage(IntroMontage);
@@ -295,6 +296,13 @@ void AMonsterCharacter::IntroParticleStart()
 void AMonsterCharacter::SkillParticleStart()
 {
 	GameStatic->SpawnEmitterAttached(SkillParticle, ParticleMuzzleLocation, FName("ParticleMuzzleLocation"));
+}
+
+void AMonsterCharacter::SkillParticleEnd()
+{
+	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+
+	GameStatic->SpawnEmitterAttached(MyGI->GetMonsterSkillSpareParticle(strMonsterType), ParticleMuzzleLocation, FName("ParticleMuzzleLocation"));
 }
 
 void AMonsterCharacter::MoveMonster()

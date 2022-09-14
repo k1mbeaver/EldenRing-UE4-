@@ -110,3 +110,8 @@ void UMonsterInstance::AnimNotify_StopMonster()
 {
 	StopMonster_Death.Broadcast();
 }
+
+void UMonsterInstance::AnimNotify_EndSkillParticle()
+{
+	EndSkillParticle_Particle.Broadcast();
+}

@@ -14,6 +14,7 @@ struct FPlayerDataTable;
 struct FMonsterParticleDataTable;
 struct FPlayerMontageDataTable;
 struct FImageDataTable;
+struct FSoundDataTable;
 class UDataTable;
 
 /**
@@ -52,8 +53,9 @@ public:
 	UParticleSystem* GetMonsterAttackParticle(FString MonsterType);
 	UParticleSystem* GetMonsterSkillParticle(FString MonsterType);
 	UParticleSystem* GetMonsterIntroParticle(FString MonsterType);
+	UParticleSystem* GetMonsterSkillSpareParticle(FString MonsterType);
 
-	// 플레이어 몽타주, 애니메이션 얻어오기
+	// 플레이어 몽타주, 애니메이션, 파티클 얻어오기
 	UAnimMontage* GetPlayerAttackAMontage();
 	UAnimMontage* GetPlayerAttackBMontage();
 	UAnimMontage* GetPlayerAttackCMontage();
@@ -64,9 +66,15 @@ public:
 	UAnimMontage* GetPlayerStartTravelMontage();
 	UAnimMontage* GetPlayerEndTravelMontage();
 	TSubclassOf<class UAnimInstance> GetPlayerAnimation();
+	UParticleSystem* GetPlayerIntroParticle();
+	UParticleSystem* GetPlayerIntroSwordParticle();
+	UParticleSystem* GetPlayerSkillParticle();
 
 	// 이미지 얻어오기
 	TSoftObjectPtr<UTexture> GetImage(FString ImageType);
+
+	// 사운드 얻어오기
+	USoundWave* GetSound(FString TypeName);
 
 
 	/*
@@ -111,4 +119,7 @@ private:
 
 	UPROPERTY()
 		UDataTable* FImageTable;
+
+	UPROPERTY()
+		UDataTable* FSoundTable;
 };

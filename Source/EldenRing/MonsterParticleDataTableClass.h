@@ -25,6 +25,10 @@ public:
 	// 플레이어 스켈레탈 메시
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UParticleSystem* MonsterSkill;
+
+	// 플레이어 스켈레탈 메시
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UParticleSystem* MonsterSkillSpare;
 };
 
 UCLASS()

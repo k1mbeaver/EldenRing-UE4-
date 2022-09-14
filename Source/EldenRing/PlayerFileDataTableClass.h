@@ -41,6 +41,18 @@ public:
 	// 플레이어 사운드
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USoundWave* PlayerDeathSound;
+
+	// 플레이어 스킬 파티클
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UParticleSystem* PlayerSkillParticle;
+
+	// 플레이어 인트로 파티클
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UParticleSystem* PlayerIntroParticle;
+
+	// 플레이어 인트로 칼 파티클
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UParticleSystem* PlayerIntroSwordParticle;
 };
 
 UCLASS()

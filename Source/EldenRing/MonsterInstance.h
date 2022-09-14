@@ -13,6 +13,7 @@ DECLARE_MULTICAST_DELEGATE(FEndSkill_SkillDelegate); // 스킬 사용 끝
 DECLARE_MULTICAST_DELEGATE(FStartParticle_ParticleDelegate); // Attack 파티클 시작
 DECLARE_MULTICAST_DELEGATE(FStartIntroParticle_ParticleDelegate); // Intro 파티클 시작
 DECLARE_MULTICAST_DELEGATE(FStartSkillParticle_ParticleDelegate); // Intro 파티클 시작
+DECLARE_MULTICAST_DELEGATE(FEndSkillParticle_ParticleDelegate); // Intro 파티클 마무리
 DECLARE_MULTICAST_DELEGATE(FStopMonster_DeathDelegate); // Death StopMonster
 
 /**
@@ -61,6 +62,9 @@ private:
 	UFUNCTION()
 		void AnimNotify_StopMonster();
 
+	UFUNCTION()
+		void AnimNotify_EndSkillParticle();
+
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		float CurrentPawnSpeed; // AnimInstance를 사용해서 C++ 스크립팅 한 것을 블루프린트에서 사용이 가능하다.
 
@@ -90,6 +94,7 @@ public:
 	FStartIntroParticle_ParticleDelegate StartIntroParticle_Particle;
 	FStartSkillParticle_ParticleDelegate StartSkillParticle_Particle;
 	FStopMonster_DeathDelegate StopMonster_Death;
+	FEndSkillParticle_ParticleDelegate EndSkillParticle_Particle;
 
 	void PlayAttackMontage(UAnimMontage* GetAttackMontage);
 	void PlayIntroMontage(UAnimMontage* GetIntroMontage);

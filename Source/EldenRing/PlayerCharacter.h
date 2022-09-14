@@ -43,6 +43,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class UCameraComponent* Camera;
 
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+		USceneComponent* ParticleLocation;
+
 	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Animation)
 	//UPROPERTY(VisibleInstanceOnly, Category = Animation)
 		//class UMyPlayerAnimInstance* MyAnim;
@@ -98,6 +101,15 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		float AttackPower;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
+		float SkillRange;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
+		float SkillRadius;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
+		float SkillPower;
+
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bIsRun;
 
@@ -127,6 +139,9 @@ public:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		FVector CameraOffset;
+
+	UPROPERTY()
+		class UGameplayStatics* GameStatic;
 
 	Potion HpPotion = { "HP", 5 };
 	Potion MpPotion = { "MP", 5 };
@@ -213,6 +228,8 @@ public:
 
 	void Skill();
 
+	void SkillCheck();
+
 	void StopSkillIntro();
 
 	void TravelMode();
@@ -249,6 +266,15 @@ public:
 
 	UFUNCTION()
 		void IntroCanMove();
+
+	UFUNCTION()
+		void IntroParticle();
+
+	UFUNCTION()
+		void IntroSwordParticle();
+
+	UFUNCTION()
+		void SkillParticle();
 
 	//void PlayerPause();
 };

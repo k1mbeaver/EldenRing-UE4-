@@ -28,8 +28,10 @@ APlayerCharacter::APlayerCharacter()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
-
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA")); 
+	ParticleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("ParticleMuzzleLocation"));
+	ParticleLocation->SetupAttachment(GetCapsuleComponent());
+	
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
 
@@ -81,6 +83,9 @@ APlayerCharacter::APlayerCharacter()
 	AttackRange = 250.0f;
 	AttackRadius = 50.0f;
 	AttackPower = 50.0f; // 나중에 파워 설정 ㄱ
+	SkillRange = 500.0f;
+	SkillRadius = 1000.0f;
+	SkillPower = 200.0f;
 
 	//nSpecialGunBullet = 30;
 
@@ -135,6 +140,10 @@ void APlayerCharacter::BeginPlay()
 	PlayerAnim->IntroCanMove_Intro.AddUObject(this, &APlayerCharacter::IntroCanMove);
 	PlayerAnim->SaveAttack_Attack.AddUObject(this, &APlayerCharacter::SaveCombo);
 	PlayerAnim->ResetCombo_Attack.AddUObject(this, &APlayerCharacter::ResetCombo);
+	PlayerAnim->IntroParticle_Intro.AddUObject(this, &APlayerCharacter::IntroParticle);
+	PlayerAnim->IntroSwordParticle_Intro.AddUObject(this, &APlayerCharacter::IntroSwordParticle);
+	PlayerAnim->SkillParticle_Attack.AddUObject(this, &APlayerCharacter::SkillParticle);
+	PlayerAnim->SkillCheck_Attack.AddUObject(this, &APlayerCharacter::SkillCheck);
 
 	TestHUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
 
@@ -247,6 +256,8 @@ void APlayerCharacter::Jump()
 	if (bCanMove)
 	{
 		Super::Jump();
+		UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+		UGameplayStatics::PlaySoundAtLocation(this, MyGI->GetSound("PlayerJump"), GetActorLocation());
 	}
 }
 
@@ -265,26 +276,31 @@ void APlayerCharacter::Attack()
 	if (bAttack)
 	{
 		auto AnimInstance = Cast<UMyPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+		UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
 		if (nullptr == AnimInstance) return;
 
 		if (nCombo == 0)
 		{
 			AnimInstance->PlayAttackMontage(AttackAMontage);
+			UGameplayStatics::PlaySoundAtLocation(this, MyGI->GetSound("PlayerAttack1"), GetActorLocation());
 		}
 
 		else if (nCombo == 1)
 		{
 			AnimInstance->PlayAttackMontage(AttackBMontage);
+			UGameplayStatics::PlaySoundAtLocation(this, MyGI->GetSound("PlayerAttack2"), GetActorLocation());
 		}
 
 		else if (nCombo == 2)
 		{
 			AnimInstance->PlayAttackMontage(AttackCMontage);
+			UGameplayStatics::PlaySoundAtLocation(this, MyGI->GetSound("PlayerAttack3"), GetActorLocation());
 		}
 
 		else if (nCombo == 3)
 		{
 			AnimInstance->PlayAttackMontage(AttackDMontage);
+			UGameplayStatics::PlaySoundAtLocation(this, MyGI->GetSound("PlayerAttack4"), GetActorLocation());
 		}
 		bAttack = false;
 	}
@@ -360,7 +376,58 @@ void APlayerCharacter::Skill()
 
 		AnimInstance->PlaySkillIntroMontage(SkillIntroMontage);
 
+		UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+		UGameplayStatics::PlaySoundAtLocation(this, MyGI->GetSound("PlayerSkillIntro"), GetActorLocation());
+
 		bSkill = true;
+	}
+}
+
+void APlayerCharacter::SkillCheck()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, this);
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		GetActorLocation() + GetActorForwardVector() * SkillRange * -1,
+		GetActorLocation() + GetActorForwardVector() * SkillRange,
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel3, // Attack 채널 player의 경우에만 충돌 한다
+		FCollisionShape::MakeSphere(SkillRange),
+		Params);
+
+#if ENABLE_DRAW_DEBUG
+	FVector TraceVec = GetActorForwardVector() * SkillRange;
+	FVector Center = GetActorLocation() + TraceVec * 0.5f;
+	float HalfHeight = SkillRange * 0.5f + SkillRadius;
+	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+	FColor DrawColor = bResult ? FColor::Green : FColor::Red;
+	float DebugLifeTime = 5.0f;
+
+	// 이거는 에디터에서만 사용하는거		
+	DrawDebugCapsule(GetWorld(),
+		Center,
+		HalfHeight,
+		SkillRadius,
+		CapsuleRot,
+		DrawColor,
+		false,
+		DebugLifeTime);
+
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerSkill!")); // 플레이어가 펀치하는지 확인용
+
+#endif
+
+
+	if (bResult)
+	{
+		if (HitResult.Actor.IsValid())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Hit!"));
+			FDamageEvent DamageEvent;
+			AMonsterCharacter* HitCharacter = Cast<AMonsterCharacter>(HitResult.Actor);
+			HitCharacter->TakeDamage(SkillPower, DamageEvent, GetController(), this);
+		}
 	}
 }
 
@@ -384,6 +451,9 @@ void APlayerCharacter::StopSkillIntro()
 		if (nullptr == AnimInstance) return;
 
 		AnimInstance->PlaySkillMontage(SkillMontage);
+
+		UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+		UGameplayStatics::PlaySoundAtLocation(this, MyGI->GetSound("PlayerSkill"), GetActorLocation());
 	}
 }
 
@@ -496,9 +566,9 @@ void APlayerCharacter::HpDrink()
 		return;
 	}
 
-	if (fPlayerHp >= 100.0f)
+	if (fPlayerHp >= 500.0f)
 	{
-		fPlayerHp = 100.0f;
+		fPlayerHp = 500.0f;
 		return;
 	}
 
@@ -571,11 +641,36 @@ void APlayerCharacter::StaminaDrink()
 void APlayerCharacter::IsStunStart()
 {
 	bAttack = false;
+	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+	UGameplayStatics::PlaySoundAtLocation(this, MyGI->GetSound("PlayerAttacked"), GetActorLocation());
 }
 
 void APlayerCharacter::IsStunEnd()
 {
 	bAttack = true;
+}
+
+void APlayerCharacter::IntroParticle()
+{
+	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+
+	//ParticleLocation->SetRelativeLocation(FVector(0.0f, 0.0f, -20.0f));
+
+	GameStatic->SpawnEmitterAttached(MyGI->GetPlayerIntroParticle(), ParticleLocation, FName("ParticleLocation"));
+}
+
+void APlayerCharacter::IntroSwordParticle()
+{
+	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+
+	GameStatic->SpawnEmitterAttached(MyGI->GetPlayerIntroSwordParticle(), ParticleLocation, FName("ParticleLocation"));
+}
+
+void APlayerCharacter::SkillParticle()
+{
+	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+
+	GameStatic->SpawnEmitterAttached(MyGI->GetPlayerSkillParticle(), ParticleLocation, FName("ParticleLocation"));
 }
 
 /*
@@ -606,6 +701,9 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 
 	if (fPlayerHp <= 0.0f) // 피가 다 까이면
 	{
+		UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+		UGameplayStatics::PlaySoundAtLocation(this, MyGI->GetSound("PlayerDead"), GetActorLocation());
+
 		PlayerAnim->SetDeadAnim();
 
 		bCanMove = false;
@@ -632,6 +730,9 @@ void APlayerCharacter::IntroCantMove()
 	bAttack = false;
 	bSkill = false;
 	bIsRun = false;
+
+	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+	UGameplayStatics::PlaySoundAtLocation(this, MyGI->GetSound("PlayerIntro"), GetActorLocation());
 }
 
 void APlayerCharacter::IntroCanMove()
