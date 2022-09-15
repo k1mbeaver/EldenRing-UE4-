@@ -40,6 +40,9 @@ public:
 	float GetMonsterHp(FString MonsterType);
 	float GetMonsterPower(FString MonsterType);
 	float GetMonsterSpeed(FString MonsterType);
+	float GetMonsterSkillPower(FString MonsterType);
+	float GetMonsterSkillRadius(FString MonsterType);
+	float GetMonsterSkillRange(FString MonsterType);
 
 	// 애님 몽타주 데이터값 얻어오기
 	UAnimMontage* GetMontage(FString MontageType);

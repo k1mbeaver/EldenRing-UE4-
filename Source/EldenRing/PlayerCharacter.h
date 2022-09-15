@@ -135,6 +135,9 @@ public:
 		bool bTravel;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		bool bAlive;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		int nCombo;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
@@ -275,6 +278,9 @@ public:
 
 	UFUNCTION()
 		void SkillParticle();
+
+	UFUNCTION()
+		void AttackedProjectTile(float fDamage);
 
 	//void PlayerPause();
 };

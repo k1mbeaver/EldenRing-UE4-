@@ -13,6 +13,7 @@
 #include "Particles/ParticleSystem.h"
 #include "PlayerUI_HUD.h"
 #include "DrawDebugHelpers.h"
+#include "MonsterProjectile.h"
 
 // Sets default values
 AMonsterCharacter::AMonsterCharacter()
@@ -35,6 +36,9 @@ AMonsterCharacter::AMonsterCharacter()
 	IntroParticleMuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("IntroMuzzleLocation"));
 	IntroParticleMuzzleLocation->SetupAttachment(GetCapsuleComponent());
 	//IntroParticleMuzzleLocation->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+
+	ProjectileMuzzle = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileMuzzle"));
+	ProjectileMuzzle->SetupAttachment(GetCapsuleComponent());
 
 	//AttackParticleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("AttackLocation"));
 	//AttackParticleLocation->SetupAttachment(GetCapsuleComponent());
@@ -234,6 +238,137 @@ void AMonsterCharacter::Skill()
 	}
 }
 
+void AMonsterCharacter::SkillCheck()
+{
+	if (strMonsterType == "Rampage")
+	{
+		GetCharacterMovement()->MaxWalkSpeed += 20; // 점점 이동속도가 증가한다.
+	}
+
+	else if (strMonsterType == "Sevarog")
+	{
+		// 투사체를 던진다.
+		// try and fire a projectile
+		if (ProjectileClass != nullptr)
+		{
+			UWorld* const World = GetWorld();
+
+			if (World != nullptr)
+			{
+				const FRotator SpawnRotation = GetControlRotation();
+				// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+				const FVector SpawnLocation = ((ProjectileMuzzle != nullptr) ? ProjectileMuzzle->GetComponentLocation() : GetActorLocation());
+
+				// + SpawnRotation.RotateVector(GunOffset)
+				//Set Spawn Collision Handling Override
+				FActorSpawnParameters ActorSpawnParams;
+				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+				// spawn the projectile at the muzzle
+				World->SpawnActor<AMonsterProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+			}
+		}
+	}
+
+	else if (strMonsterType == "Narbash")
+	{
+		// 광범위 공격을 시전한다.
+		FHitResult HitResult;
+		FCollisionQueryParams Params(NAME_None, false, this);
+		bool bResult = GetWorld()->SweepSingleByChannel(
+			HitResult,
+			GetActorLocation() + GetActorForwardVector() * SkillRange * -1,
+			GetActorLocation() + GetActorForwardVector() * SkillRange,
+			FQuat::Identity,
+			ECollisionChannel::ECC_GameTraceChannel2, // Attack 채널 player의 경우에만 충돌 한다
+			FCollisionShape::MakeSphere(SkillRange),
+			Params);
+
+#if ENABLE_DRAW_DEBUG
+		FVector TraceVec = GetActorForwardVector() * SkillRange;
+		FVector Center = GetActorLocation() + TraceVec * 0.5f;
+		float HalfHeight = SkillRange * 0.5f + SkillRadius;
+		FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+		FColor DrawColor = bResult ? FColor::Green : FColor::Red;
+		float DebugLifeTime = 5.0f;
+
+		// 이거는 에디터에서만 사용하는거		
+		DrawDebugCapsule(GetWorld(),
+			Center,
+			HalfHeight,
+			SkillRadius,
+			CapsuleRot,
+			DrawColor,
+			false,
+			DebugLifeTime);
+
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("MonsterSkill!")); // 플레이어가 펀치하는지 확인용
+
+#endif
+
+
+		if (bResult)
+		{
+			if (HitResult.Actor.IsValid())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Hit!"));
+				FDamageEvent DamageEvent;
+				APlayerCharacter* HitCharacter = Cast<APlayerCharacter>(HitResult.Actor);
+				HitCharacter->TakeDamage(SkillPower, DamageEvent, GetController(), this);
+			}
+		}
+	}
+
+	else if (strMonsterType == "Grux")
+	{
+		// 광범위 공격을 시전한다.
+		FHitResult HitResult;
+		FCollisionQueryParams Params(NAME_None, false, this);
+		bool bResult = GetWorld()->SweepSingleByChannel(
+			HitResult,
+			GetActorLocation() + GetActorForwardVector() * SkillRange * -1,
+			GetActorLocation() + GetActorForwardVector() * SkillRange,
+			FQuat::Identity,
+			ECollisionChannel::ECC_GameTraceChannel2, // Attack 채널 player의 경우에만 충돌 한다
+			FCollisionShape::MakeSphere(SkillRange),
+			Params);
+
+#if ENABLE_DRAW_DEBUG
+		FVector TraceVec = GetActorForwardVector() * SkillRange;
+		FVector Center = GetActorLocation() + TraceVec * 0.5f;
+		float HalfHeight = SkillRange * 0.5f + SkillRadius;
+		FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();
+		FColor DrawColor = bResult ? FColor::Green : FColor::Red;
+		float DebugLifeTime = 5.0f;
+
+		// 이거는 에디터에서만 사용하는거		
+		DrawDebugCapsule(GetWorld(),
+			Center,
+			HalfHeight,
+			SkillRadius,
+			CapsuleRot,
+			DrawColor,
+			false,
+			DebugLifeTime);
+
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("MonsterSkill!")); // 플레이어가 펀치하는지 확인용
+
+#endif
+
+
+		if (bResult)
+		{
+			if (HitResult.Actor.IsValid())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Hit!"));
+				FDamageEvent DamageEvent;
+				APlayerCharacter* HitCharacter = Cast<APlayerCharacter>(HitResult.Actor);
+				HitCharacter->TakeDamage(SkillPower, DamageEvent, GetController(), this);
+			}
+		}
+	}
+}
+
 void AMonsterCharacter::SkillEnd()
 {
 	bCanAttack = true;
@@ -269,6 +404,10 @@ void AMonsterCharacter::InitializeAI(FString MonsterType)
 	GetCharacterMovement()->MaxWalkSpeed = MyGI->GetMonsterSpeed(MonsterType);
 	AttackPower = MyGI->GetMonsterPower(MonsterType);
 
+	SkillPower = MyGI->GetMonsterSkillPower(MonsterType);
+	SkillRadius = MyGI->GetMonsterSkillRadius(MonsterType);
+	SkillRange = MyGI->GetMonsterSkillRange(MonsterType);
+
 	MonsterAnim = Cast<UMonsterInstance>(GetMesh()->GetAnimInstance());
 	MonsterAnim->AttackCheck_Attack.AddUObject(this, &AMonsterCharacter::AttackCheck);
 	MonsterAnim->EndAttack_Attack.AddUObject(this, &AMonsterCharacter::AttackEnd);
@@ -278,6 +417,7 @@ void AMonsterCharacter::InitializeAI(FString MonsterType)
 	MonsterAnim->StartGame_Intro.AddUObject(this, &AMonsterCharacter::MoveMonster);
 	MonsterAnim->StopMonster_Death.AddUObject(this, &AMonsterCharacter::StopMonster);
 	MonsterAnim->EndSkillParticle_Particle.AddUObject(this, &AMonsterCharacter::SkillParticleEnd);
+	MonsterAnim->SkillCheck_Skill.AddUObject(this, &AMonsterCharacter::SkillCheck);
 
 	// 인트로 모션 시작
 	MonsterAnim->PlayIntroMontage(IntroMontage);

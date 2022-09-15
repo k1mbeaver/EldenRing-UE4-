@@ -28,6 +28,18 @@ public:
 	// 몬스터 Speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float MonsterSpeed;
+
+	// 몬스터 Skill Power
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float SkillPower;
+
+	// 몬스터 Skill Radius
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float SkillRadius;
+
+	// 몬스터 Skill Range
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float SkillRange;
 };
 
 UCLASS()

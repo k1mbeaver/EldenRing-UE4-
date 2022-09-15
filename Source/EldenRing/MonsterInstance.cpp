@@ -115,3 +115,8 @@ void UMonsterInstance::AnimNotify_EndSkillParticle()
 {
 	EndSkillParticle_Particle.Broadcast();
 }
+
+void UMonsterInstance::AnimNotify_SkillCheck()
+{
+	SkillCheck_Skill.Broadcast();
+}

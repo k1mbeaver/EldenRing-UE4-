@@ -115,6 +115,27 @@ float UEldenRingGameInstance::GetMonsterPower(FString MonsterType)
 	return MonsterPower;
 }
 
+float UEldenRingGameInstance::GetMonsterSkillPower(FString MonsterType)
+{
+	FMonsterDataTable* MonsterData = FMonsterTable->FindRow<FMonsterDataTable>(*MonsterType, TEXT(""));
+	float MonsterPower = MonsterData->SkillPower;
+	return MonsterPower;
+}
+
+float UEldenRingGameInstance::GetMonsterSkillRadius(FString MonsterType)
+{
+	FMonsterDataTable* MonsterData = FMonsterTable->FindRow<FMonsterDataTable>(*MonsterType, TEXT(""));
+	float MonsterPower = MonsterData->SkillRadius;
+	return MonsterPower;
+}
+
+float UEldenRingGameInstance::GetMonsterSkillRange(FString MonsterType)
+{
+	FMonsterDataTable* MonsterData = FMonsterTable->FindRow<FMonsterDataTable>(*MonsterType, TEXT(""));
+	float MonsterPower = MonsterData->SkillRange;
+	return MonsterPower;
+}
+
 UAnimMontage* UEldenRingGameInstance::GetMontage(FString MontageType)
 {
 	FMontageDataTable* MontageData = FMontageTable->FindRow<FMontageDataTable>(*MontageType, TEXT(""));

@@ -27,6 +27,15 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		float AttackRadius;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float SkillPower;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float SkillRange;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float SkillRadius;
+
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Speed, Meta = (AllowPrivateAccess = true))
 		float MonsterSpeed;
 
@@ -75,6 +84,13 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 		USceneComponent* IntroParticleMuzzleLocation;
 
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+		USceneComponent* ProjectileMuzzle;
+
+	/** Projectile class to spawn */
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+		TSubclassOf<class AMonsterProjectile> ProjectileClass;
+
 	//UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 		//USceneComponent* AttackParticleLocation;
 
@@ -120,6 +136,7 @@ public:
 	void AttackEnd();
 	void SkillEnd();
 	void AttackCheck();
+	void SkillCheck();
 	//void AttackCheck();
 	//void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	//void AttackByPlayer(float DamageAmount);

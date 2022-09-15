@@ -97,6 +97,7 @@ APlayerCharacter::APlayerCharacter()
 	bTravel = false;
 	bCanSkill = true;
 	bRunning = false;
+	bAlive = true;
 	//myGun = EGunState::BASIC;
 }
 
@@ -157,6 +158,28 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!bAlive)
+	{
+		UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+		UGameplayStatics::PlaySoundAtLocation(this, MyGI->GetSound("PlayerDead"), GetActorLocation());
+
+		PlayerAnim->SetDeadAnim();
+
+		bCanMove = false;
+
+		FInputModeUIOnly InputMode;
+		UGameplayStatics::GetPlayerController(this, 0)->SetInputMode(InputMode);
+		UGameplayStatics::GetPlayerController(this, 0)->SetShowMouseCursor(true);
+
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+
+		bAlive = true; // 다시 실행되지 않게하기 위함
+
+		//HUD->SetGameOverUIVisible();
+	}
 
 	if (bRunning)
 	{
@@ -701,27 +724,26 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 
 	if (fPlayerHp <= 0.0f) // 피가 다 까이면
 	{
-		UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
-		UGameplayStatics::PlaySoundAtLocation(this, MyGI->GetSound("PlayerDead"), GetActorLocation());
-
-		PlayerAnim->SetDeadAnim();
-
-		bCanMove = false;
-
-		FInputModeUIOnly InputMode;
-		UGameplayStatics::GetPlayerController(this, 0)->SetInputMode(InputMode);
-		UGameplayStatics::GetPlayerController(this, 0)->SetShowMouseCursor(true);
-
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-
-		//HUD->SetGameOverUIVisible();
+		bAlive = false;
 	}
 
 	//MyTakeDamage.Broadcast();
 	return FinalDamage;
 
+}
+
+void APlayerCharacter::AttackedProjectTile(float fDamage)
+{
+	fPlayerHp -= fDamage;
+
+	APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+
+	HUD->SetPlayerHP(fPlayerHp / fMaxHp);
+
+	if (fPlayerHp <= 0.0f)
+	{
+		bAlive = false;
+	}
 }
 
 void APlayerCharacter::IntroCantMove()
