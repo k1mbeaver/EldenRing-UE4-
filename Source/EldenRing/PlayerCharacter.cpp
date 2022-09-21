@@ -98,6 +98,7 @@ APlayerCharacter::APlayerCharacter()
 	bCanSkill = true;
 	bRunning = false;
 	bAlive = true;
+	bInventory = false; // false가 안열려있는 상태, true는 열려있는 상태
 	//myGun = EGunState::BASIC;
 }
 
@@ -763,5 +764,26 @@ void APlayerCharacter::IntroCanMove()
 	bAttack = true;
 	bSkill = true;
 	bIsRun = true;
+}
+
+void APlayerCharacter::CheckInventory()
+{
+	if (!bInventory)
+	{
+		APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+
+		HUD->SetVisible();
+
+		bInventory = true;
+	}
+
+	else
+	{
+		APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+
+		HUD->SetHidden();
+
+		bInventory = false;
+	}
 }
 

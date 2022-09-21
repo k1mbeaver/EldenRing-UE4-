@@ -10,6 +10,7 @@
 #include "PlayerMontageDataTableClass.h"
 #include "ImageDataTableClass.h"
 #include "SoundDataTableClass.h"
+#include "ItemDataTableClass.h"
 
 UEldenRingGameInstance::UEldenRingGameInstance()
 {
@@ -21,6 +22,7 @@ UEldenRingGameInstance::UEldenRingGameInstance()
 	FString PlayerMontageDataPath = TEXT("DataTable'/Game/DataTable/PlayerMontageData.PlayerMontageData'");
 	FString ImageDataPath = TEXT("DataTable'/Game/DataTable/ImageData.ImageData'");
 	FString SoundDataPath = TEXT("DataTable'/Game/DataTable/SoundData.SoundData'");
+	FString ItemDataPath = TEXT("DataTable'/Game/DataTable/ItemData.ItemData'");
 
 	//E:/Unreal/ZombieShooting/Content/File/Json/PlayerData.uasset
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ABPLAYERFILE(*PlayerFileDataPath);
@@ -77,6 +79,13 @@ UEldenRingGameInstance::UEldenRingGameInstance()
 	if (DT_SOUND.Succeeded())
 	{
 		FSoundTable = DT_SOUND.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ITEM(*ItemDataPath);
+
+	if (DT_ITEM.Succeeded())
+	{
+		FItemTable = DT_ITEM.Object;
 	}
 }
 
@@ -324,3 +333,25 @@ USoundWave* UEldenRingGameInstance::GetSound(FString TypeName)
 	USoundWave* MySound = SoundData->MySound;
 	return MySound;
 }
+
+UTexture2D* UEldenRingGameInstance::GetItemImage(FString ItemType)
+{
+	FItemDataTable* ImageData = FItemTable->FindRow<FItemDataTable>(*ItemType, TEXT(""));
+	UTexture2D* myImage = ImageData->ItemImage;
+	return myImage;
+}
+
+FString UEldenRingGameInstance::GetItemName(FString ItemType)
+{
+	FItemDataTable* ItemData = FItemTable->FindRow<FItemDataTable>(*ItemType, TEXT(""));
+	FString ItemName = ItemData->ItemName;
+	return ItemName;
+}
+
+FString UEldenRingGameInstance::GetItemDescript(FString ItemType)
+{
+	FItemDataTable* ItemData = FItemTable->FindRow<FItemDataTable>(*ItemType, TEXT(""));
+	FString ItemDesript = ItemData->ItemDescript;
+	return ItemDesript;
+}
+

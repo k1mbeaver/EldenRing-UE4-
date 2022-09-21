@@ -65,6 +65,9 @@ void AMyPlayerController::SetupInputComponent()
 	InputComponent->BindAction("MPDrink", IE_Pressed, this, &AMyPlayerController::MpDrink);
 	InputComponent->BindAction("StaminaDrink", IE_Pressed, this, &AMyPlayerController::StaminaDrink);
 
+	// 캐릭터 인벤토리 확인 함수
+	InputComponent->BindAction("Inventory", IE_Pressed, this, &AMyPlayerController::CheckInventory);
+
 	// 플레이어 일시정지 함수
 	//InputComponent->BindAction("Pause", IE_Pressed, this, &AMyPlayerController::PlayerPause);
 }
@@ -201,6 +204,15 @@ void AMyPlayerController::StaminaDrink()
 	if (myCharacter != nullptr)
 	{
 		myCharacter->StaminaDrink();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("StopRun!"));
+	}
+}
+
+void AMyPlayerController::CheckInventory()
+{
+	if (myCharacter != nullptr)
+	{
+		myCharacter->CheckInventory();
 		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("StopRun!"));
 	}
 }

@@ -26,6 +26,8 @@ public:
 	void SetMonsterName(FString strMonsterName);
 	void SetMonsterVisible();
 	void SetPotionAmount(FString strPotionType, int nAmount);
+	void SetVisible();
+	void SetHidden();
 
 private:
 	TSubclassOf<class UPlayerUIMain_UW> MainUIClass;

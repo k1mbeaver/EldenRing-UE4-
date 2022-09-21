@@ -55,5 +55,7 @@ private:
 
 	void StaminaDrink();
 
+	void CheckInventory();
+
 	//void PlayerPause();
 };

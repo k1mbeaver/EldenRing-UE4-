@@ -14,8 +14,11 @@ class ELDENRING_API UPlayerUIMain_UW : public UUserWidget
 {
 	GENERATED_BODY()
 	
-		UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(Meta = (BindWidget))
 		class UPlayerUI_UW* PlayerUI_WB;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UPlayerInventory_UW* PlayerInventory_WB;
 
 
 public:
@@ -26,4 +29,6 @@ public:
 	void SetMonsterName(FString strMonsterName);
 	void SetMonsterVisible();
 	void SetPotionAmount(FString strPotionType, int nAmount);
+	void SetVisible();
+	void SetHidden();
 };

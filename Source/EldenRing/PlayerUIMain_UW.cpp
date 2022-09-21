@@ -3,6 +3,7 @@
 
 #include "PlayerUIMain_UW.h"
 #include "PlayerUI_UW.h"
+#include "PlayerInventory_UW.h"
 
 void UPlayerUIMain_UW::SetPlayerHP(float fCurrent)
 {
@@ -37,4 +38,14 @@ void UPlayerUIMain_UW::SetMonsterVisible()
 void UPlayerUIMain_UW::SetPotionAmount(FString strPotionType, int nAmount)
 {
 	PlayerUI_WB->SetPotionAmount(strPotionType, nAmount);
+}
+
+void UPlayerUIMain_UW::SetVisible()
+{
+	PlayerInventory_WB->SetVisible();
+}
+
+void UPlayerUIMain_UW::SetHidden()
+{
+	PlayerInventory_WB->SetHidden();
 }

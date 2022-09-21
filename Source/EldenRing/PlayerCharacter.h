@@ -12,6 +12,14 @@ struct Potion
 	int PotionAmount = 0;
 };
 
+struct Item
+{
+	FString ItemName = "";
+	FString ItemDescript = "";
+	UTexture2D* ItemImage = nullptr;
+	int ItemCount = 0;
+};
+
 UCLASS()
 class ELDENRING_API APlayerCharacter : public ACharacter
 {
@@ -45,6 +53,9 @@ public:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 		USceneComponent* ParticleLocation;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI)
+		//TArray<Item*> Inventory;
 
 	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Animation)
 	//UPROPERTY(VisibleInstanceOnly, Category = Animation)
@@ -136,6 +147,9 @@ public:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bAlive;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		bool bInventory;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		int nCombo;
@@ -242,6 +256,8 @@ public:
 	void MpDrink();
 
 	void StaminaDrink();
+
+	void CheckInventory();
 
 	UFUNCTION()
 		void SaveCombo();

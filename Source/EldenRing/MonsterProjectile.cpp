@@ -13,8 +13,8 @@
 AMonsterProjectile::AMonsterProjectile()
 {
 	// Use a sphere as a simple collision representation
-	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SquareComp"));
-	CollisionComp->InitSphereRadius(500.0f);
+	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	CollisionComp->InitSphereRadius(250.0f);
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
 	CollisionComp->OnComponentHit.AddDynamic(this, &AMonsterProjectile::OnHit);		// set up a notification for when this component hits something blocking
 
@@ -28,13 +28,13 @@ AMonsterProjectile::AMonsterProjectile()
 	// Use a ProjectileMovementComponent to govern this projectile's movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
-	ProjectileMovement->InitialSpeed = 5000.0f;
-	ProjectileMovement->MaxSpeed = 5000.0f;
+	ProjectileMovement->InitialSpeed = 3000.0f;
+	ProjectileMovement->MaxSpeed = 3000.0f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = false;
 
-	// Die after 3 seconds by default
-	InitialLifeSpan = 3.0f;
+	// Die after 2 seconds by default
+	InitialLifeSpan = 2.0f;
 
 	AttackPower = 200.0f;
 }
@@ -44,6 +44,8 @@ void AMonsterProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 	// Only add impulse and destroy projectile if we hit a physics
 	//UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
 	//FString GunName = MyGI->GetPlayerGun();
+
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("PlayerHitSkill!")); // 몬스터의 스킬을 플레이어가 맞았나 안맞았나?
 
 	//if (Cast<APlayerCharacter>(Hit.Actor)) // 맞은 대상이 몬스터일 때
 	if (Cast<APlayerCharacter>(OtherActor)) // 맞은 대상이 몬스터일 때

@@ -82,3 +82,13 @@ void APlayerUI_HUD::SetPotionAmount(FString strPotionType, int nAmount)
 {
 	MainUIObject->SetPotionAmount(strPotionType, nAmount);
 }
+
+void APlayerUI_HUD::SetVisible()
+{
+	MainUIObject->SetVisible();
+}
+
+void APlayerUI_HUD::SetHidden()
+{
+	MainUIObject->SetHidden();
+}

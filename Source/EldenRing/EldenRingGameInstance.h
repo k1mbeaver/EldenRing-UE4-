@@ -15,6 +15,7 @@ struct FMonsterParticleDataTable;
 struct FPlayerMontageDataTable;
 struct FImageDataTable;
 struct FSoundDataTable;
+struct FItemDataTable;
 class UDataTable;
 
 /**
@@ -79,6 +80,11 @@ public:
 	// 사운드 얻어오기
 	USoundWave* GetSound(FString TypeName);
 
+	// 아이템 정보 얻어오기
+	FString GetItemName(FString ItemType);
+	UTexture2D* GetItemImage(FString ItemType);
+	FString GetItemDescript(FString ItemType);
+
 
 	/*
 	FString GetMonsterName(FString MonsterType);
@@ -125,4 +131,7 @@ private:
 
 	UPROPERTY()
 		UDataTable* FSoundTable;
+
+	UPROPERTY()
+		UDataTable* FItemTable;
 };
