@@ -4,6 +4,7 @@
 #include "PlayerUIMain_UW.h"
 #include "PlayerUI_UW.h"
 #include "PlayerInventory_UW.h"
+#include "ItemStruct.h"
 
 void UPlayerUIMain_UW::SetPlayerHP(float fCurrent)
 {
@@ -48,4 +49,24 @@ void UPlayerUIMain_UW::SetVisible()
 void UPlayerUIMain_UW::SetHidden()
 {
 	PlayerInventory_WB->SetHidden();
+}
+
+void UPlayerUIMain_UW::SetItemDescriptHidden()
+{
+	PlayerInventory_WB->SetItemDescriptHidden();
+}
+
+void UPlayerUIMain_UW::SetItemDescriptVisible()
+{
+	PlayerInventory_WB->SetItemDescriptVisible();
+}
+
+void UPlayerUIMain_UW::SetItemDescript(FString setItemName, FString setItemDescript, UTexture2D* setItemImage)
+{
+	PlayerInventory_WB->SetItemDescript(setItemName, setItemDescript, setItemImage);
+}
+
+void UPlayerUIMain_UW::SetSlot(int nSlot, TArray<FPlayerItem> arrInventory)
+{
+	PlayerInventory_WB->SetSlot(nSlot, arrInventory);
 }

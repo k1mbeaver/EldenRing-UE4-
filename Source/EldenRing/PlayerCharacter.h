@@ -4,20 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "ItemStruct.h"
 #include "PlayerCharacter.generated.h"
 
 struct Potion
 {
 	FString PotionType = "Null";
 	int PotionAmount = 0;
-};
-
-struct Item
-{
-	FString ItemName = "";
-	FString ItemDescript = "";
-	UTexture2D* ItemImage = nullptr;
-	int ItemCount = 0;
 };
 
 UCLASS()
@@ -54,8 +47,14 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 		USceneComponent* ParticleLocation;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI)
-		//TArray<Item*> Inventory;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI)
+		TArray<FPlayerItem> Inventory;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI)
+		FPlayerItem DefaultInventory = {"", "", nullptr, 0};
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		int nInventory; // 인벤토리 슬롯 수
 
 	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Animation)
 	//UPROPERTY(VisibleInstanceOnly, Category = Animation)
@@ -258,6 +257,8 @@ public:
 	void StaminaDrink();
 
 	void CheckInventory();
+
+	void InitInventory();
 
 	UFUNCTION()
 		void SaveCombo();

@@ -99,6 +99,7 @@ APlayerCharacter::APlayerCharacter()
 	bRunning = false;
 	bAlive = true;
 	bInventory = false; // false가 안열려있는 상태, true는 열려있는 상태
+	nInventory = 16;
 	//myGun = EGunState::BASIC;
 }
 
@@ -116,8 +117,6 @@ void APlayerCharacter::BeginPlay()
 	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
 	GetMesh()->SetSkeletalMesh(MyGI->GetPlayerSkeletalMesh("Default"));
 	GetMesh()->SetAnimInstanceClass(MyGI->GetPlayerAnimation());
-
-	
 
 	AttackAMontage = MyGI->GetPlayerAttackAMontage();
 	AttackBMontage = MyGI->GetPlayerAttackBMontage();
@@ -153,6 +152,9 @@ void APlayerCharacter::BeginPlay()
 	TestHUD->SetPotionAmount(MpPotion.PotionType, MpPotion.PotionAmount);
 	TestHUD->SetPotionAmount(StaminaPotion.PotionType, StaminaPotion.PotionAmount);
 	bIsRun = false;// 시작할 때 달리기 느려지는 오류 대처
+
+	Inventory.Init(DefaultInventory, nInventory);
+	InitInventory();
 }
 
 // Called every frame
@@ -772,7 +774,17 @@ void APlayerCharacter::CheckInventory()
 	{
 		APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
 
+		//GameStatic->SetGamePaused(GetWorld(), true);
+
+		FInputModeUIOnly InputMode;
+		//UGameplayStatics::GetPlayerController(this, 0)->SetInputMode(InputMode);
+		UGameplayStatics::GetPlayerController(this, 0)->SetShowMouseCursor(true);
+
 		HUD->SetVisible();
+		UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+
+		//HUD->SetItemDescriptVisible();
+		//HUD->SetItemDescript(MyGI->GetItemName("HP"), MyGI->GetItemDescript("HP"), MyGI->GetItemImage("HP"));
 
 		bInventory = true;
 	}
@@ -781,9 +793,39 @@ void APlayerCharacter::CheckInventory()
 	{
 		APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
 
+		//GameStatic->SetGamePaused(GetWorld(), false);
+
+		UGameplayStatics::GetPlayerController(this, 0)->SetShowMouseCursor(false);
+
 		HUD->SetHidden();
 
 		bInventory = false;
 	}
+}
+
+void APlayerCharacter::InitInventory()
+{
+	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+	APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+
+	for (int Index = 0; Index < nInventory; Index++)
+	{
+		if (MyGI->GetInventoryItemName(Index) != "")
+		{
+			FString getItemName = MyGI->GetInventoryItemName(Index);
+			UTexture2D* getItemImage = MyGI->GetItemImage(getItemName);
+			FString getItemDescript = MyGI->GetItemDescript(getItemName);
+			int getItemCount = MyGI->GetInventoryItemCount(Index);
+			Inventory[Index] = { getItemName, getItemDescript, getItemImage, getItemCount };
+		}
+
+		else
+		{
+			Inventory[Index] = { "", "", nullptr, 0 };
+		}
+	}
+
+	// 여기서 슬롯 초기화 진행 
+	HUD->SetSlot(nInventory, Inventory);
 }
 

@@ -16,6 +16,7 @@ struct FPlayerMontageDataTable;
 struct FImageDataTable;
 struct FSoundDataTable;
 struct FItemDataTable;
+struct FInventoryDataTable;
 class UDataTable;
 
 /**
@@ -85,6 +86,13 @@ public:
 	UTexture2D* GetItemImage(FString ItemType);
 	FString GetItemDescript(FString ItemType);
 
+	// 인벤토리 정보 얻어오기, 설정하기
+	FString GetInventoryItemName(int nSlot);
+	int GetInventoryItemCount(int nSlot);
+	void SetInventoryItemCount(int nSlot, int nCount);
+	void SetInventoryItemName(int nSlot, FString setItemName);
+	void SetInventorySlotInit(int nSlot);
+
 
 	/*
 	FString GetMonsterName(FString MonsterType);
@@ -134,4 +142,7 @@ private:
 
 	UPROPERTY()
 		UDataTable* FItemTable;
+
+	UPROPERTY()
+		UDataTable* FInventoryTable;
 };

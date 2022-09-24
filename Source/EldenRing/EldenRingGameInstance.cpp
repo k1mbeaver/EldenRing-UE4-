@@ -11,6 +11,7 @@
 #include "ImageDataTableClass.h"
 #include "SoundDataTableClass.h"
 #include "ItemDataTableClass.h"
+#include "InventoryDataTableClass.h"
 
 UEldenRingGameInstance::UEldenRingGameInstance()
 {
@@ -23,6 +24,7 @@ UEldenRingGameInstance::UEldenRingGameInstance()
 	FString ImageDataPath = TEXT("DataTable'/Game/DataTable/ImageData.ImageData'");
 	FString SoundDataPath = TEXT("DataTable'/Game/DataTable/SoundData.SoundData'");
 	FString ItemDataPath = TEXT("DataTable'/Game/DataTable/ItemData.ItemData'");
+	FString InventoryDataPath = TEXT("DataTable'/Game/DataTable/InventoryData.InventoryData'");
 
 	//E:/Unreal/ZombieShooting/Content/File/Json/PlayerData.uasset
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_ABPLAYERFILE(*PlayerFileDataPath);
@@ -86,6 +88,13 @@ UEldenRingGameInstance::UEldenRingGameInstance()
 	if (DT_ITEM.Succeeded())
 	{
 		FItemTable = DT_ITEM.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_INVENTORY(*InventoryDataPath);
+
+	if (DT_INVENTORY.Succeeded())
+	{
+		FInventoryTable = DT_INVENTORY.Object;
 	}
 }
 
@@ -355,3 +364,40 @@ FString UEldenRingGameInstance::GetItemDescript(FString ItemType)
 	return ItemDesript;
 }
 
+FString UEldenRingGameInstance::GetInventoryItemName(int nSlot)
+{
+	FString strSlot = FString::FromInt(nSlot);
+	FInventoryDataTable* InventoryData = FInventoryTable->FindRow<FInventoryDataTable>(*strSlot, TEXT(""));
+	FString ItemName = InventoryData->ItemName;
+	return ItemName;
+}
+
+int UEldenRingGameInstance::GetInventoryItemCount(int nSlot)
+{
+	FString strSlot = FString::FromInt(nSlot);
+	FInventoryDataTable* InventoryData = FInventoryTable->FindRow<FInventoryDataTable>(*strSlot, TEXT(""));
+	int ItemCount = InventoryData->ItemCount;
+	return ItemCount;
+}
+
+void UEldenRingGameInstance::SetInventoryItemCount(int nSlot, int nCount)
+{
+	FString strSlot = FString::FromInt(nSlot);
+	FInventoryDataTable* InventoryData = FInventoryTable->FindRow<FInventoryDataTable>(*strSlot, TEXT(""));
+	InventoryData->ItemCount = nCount;
+}
+
+void UEldenRingGameInstance::SetInventoryItemName(int nSlot, FString setItemName)
+{
+	FString strSlot = FString::FromInt(nSlot);
+	FInventoryDataTable* InventoryData = FInventoryTable->FindRow<FInventoryDataTable>(*strSlot, TEXT(""));
+	InventoryData->ItemName = setItemName;
+}
+
+void UEldenRingGameInstance::SetInventorySlotInit(int nSlot)
+{
+	FString strSlot = FString::FromInt(nSlot);
+	FInventoryDataTable* InventoryData = FInventoryTable->FindRow<FInventoryDataTable>(*strSlot, TEXT(""));
+	InventoryData->ItemCount = 0;
+	InventoryData->ItemName = "";
+}

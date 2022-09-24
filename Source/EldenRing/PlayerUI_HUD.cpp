@@ -7,6 +7,7 @@
 #include "Engine/Texture2D.h"
 #include "TextureResource.h"
 #include "CanvasItem.h"
+#include "ItemStruct.h"
 #include "UObject/ConstructorHelpers.h"
 
 APlayerUI_HUD::APlayerUI_HUD()
@@ -91,4 +92,24 @@ void APlayerUI_HUD::SetVisible()
 void APlayerUI_HUD::SetHidden()
 {
 	MainUIObject->SetHidden();
+}
+
+void APlayerUI_HUD::SetItemDescriptHidden()
+{
+	MainUIObject->SetItemDescriptHidden();
+}
+
+void APlayerUI_HUD::SetItemDescriptVisible()
+{
+	MainUIObject->SetItemDescriptVisible();
+}
+
+void APlayerUI_HUD::SetItemDescript(FString setItemName, FString setItemDescript, UTexture2D* setItemImage)
+{
+	MainUIObject->SetItemDescript(setItemName, setItemDescript, setItemImage);
+}
+
+void APlayerUI_HUD::SetSlot(int nSlot, TArray<FPlayerItem> arrInventory)
+{
+	MainUIObject->SetSlot(nSlot, arrInventory);
 }

@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "ItemStruct.h"
 #include "PlayerInventory_UW.generated.h"
+
+class UUISlot_UW;
 
 /**
  * 
@@ -15,8 +18,16 @@ class ELDENRING_API UPlayerInventory_UW : public UUserWidget
 	GENERATED_BODY()
 	
 private:
-	//UPROPERTY(Meta = (BindWidget))
-		//class UTextBlock* MonsterName;
+	UPROPERTY(Meta = (BindWidget))
+		class UTextBlock* ItemName;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UTextBlock* ItemDescript;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UImage* ItemImage;
+
+	TArray<UUISlot_UW*> Slots;
 
 protected:
 	virtual void NativeOnInitialized() override;
@@ -25,4 +36,8 @@ public:
 
 	void SetVisible();
 	void SetHidden();
+	void SetItemDescript(FString setItemName, FString setItemDescript, UTexture2D* setItemImage);
+	void SetItemDescriptVisible();
+	void SetItemDescriptHidden();
+	void SetSlot(int nSlot, TArray<FPlayerItem> arrInventory);
 };

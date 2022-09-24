@@ -28,6 +28,10 @@ public:
 	void SetPotionAmount(FString strPotionType, int nAmount);
 	void SetVisible();
 	void SetHidden();
+	void SetItemDescript(FString setItemName, FString setItemDescript, UTexture2D* setItemImage);
+	void SetItemDescriptVisible();
+	void SetItemDescriptHidden();
+	void SetSlot(int nSlot, TArray<FPlayerItem> arrInventory);
 
 private:
 	TSubclassOf<class UPlayerUIMain_UW> MainUIClass;
