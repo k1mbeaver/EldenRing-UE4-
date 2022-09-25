@@ -4,6 +4,7 @@
 #include "MyPlayerController.h"
 #include "PlayerCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 
 AMyPlayerController::AMyPlayerController()
 {
@@ -53,12 +54,23 @@ void AMyPlayerController::SetupInputComponent()
 
 
 	// 캐릭터 스킬 함수
-	InputComponent->BindAction("SKill", IE_Pressed, this, &AMyPlayerController::Skill);
+	InputComponent->BindAction("Skill", IE_Pressed, this, &AMyPlayerController::Skill);
+	InputComponent->BindAction("Skill", IE_Released, this, &AMyPlayerController::StopSkillIntro);
+
+	// 캐릭터 자유이동 함수
+	InputComponent->BindAction("TravelMode", IE_Pressed, this, &AMyPlayerController::TravelMode);
+
+	// 캐릭터 아이템 사용 함수
+	InputComponent->BindAction("HPDrink", IE_Pressed, this, &AMyPlayerController::HpDrink);
+	InputComponent->BindAction("MPDrink", IE_Pressed, this, &AMyPlayerController::MpDrink);
+	InputComponent->BindAction("StaminaDrink", IE_Pressed, this, &AMyPlayerController::StaminaDrink);
+
+	// 캐릭터 인벤토리 확인 함수
+	InputComponent->BindAction("Inventory", IE_Pressed, this, &AMyPlayerController::CheckInventory);
 
 	// 플레이어 일시정지 함수
 	//InputComponent->BindAction("Pause", IE_Pressed, this, &AMyPlayerController::PlayerPause);
 }
-
 
 void AMyPlayerController::UpDown(float NewAxisValue)
 {
@@ -96,7 +108,6 @@ void AMyPlayerController::Turn(float NewAxisValue)
 	}
 }
 
-
 void AMyPlayerController::Jump()
 {
 	if (myCharacter != nullptr)
@@ -111,6 +122,25 @@ void AMyPlayerController::Skill()
 	if (myCharacter != nullptr)
 	{
 		myCharacter->Skill();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Jump!"));
+	}
+}
+
+
+void AMyPlayerController::StopSkillIntro()
+{
+	if (myCharacter != nullptr)
+	{
+		myCharacter->StopSkillIntro();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Jump!"));
+	}
+}
+
+void AMyPlayerController::TravelMode()
+{
+	if (myCharacter != nullptr)
+	{
+		myCharacter->TravelMode();
 		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("Jump!"));
 	}
 }
@@ -147,6 +177,42 @@ void AMyPlayerController::StopRun()
 	if (myCharacter != nullptr)
 	{
 		myCharacter->StopRun();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("StopRun!"));
+	}
+}
+
+void AMyPlayerController::HpDrink()
+{
+	if (myCharacter != nullptr)
+	{
+		myCharacter->HpDrink();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("StopRun!"));
+	}
+}
+
+void AMyPlayerController::MpDrink()
+{
+	if (myCharacter != nullptr)
+	{
+		myCharacter->MpDrink();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("StopRun!"));
+	}
+}
+
+void AMyPlayerController::StaminaDrink()
+{
+	if (myCharacter != nullptr)
+	{
+		myCharacter->StaminaDrink();
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("StopRun!"));
+	}
+}
+
+void AMyPlayerController::CheckInventory()
+{
+	if (myCharacter != nullptr)
+	{
+		myCharacter->CheckInventory();
 		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("StopRun!"));
 	}
 }

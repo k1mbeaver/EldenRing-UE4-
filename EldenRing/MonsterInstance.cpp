@@ -4,6 +4,8 @@
 #include "MonsterInstance.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "EldenRingGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 UMonsterInstance::UMonsterInstance()
 {
@@ -11,11 +13,19 @@ UMonsterInstance::UMonsterInstance()
 	IsInAir = false;
 	IsDead = false;
 	IsAttacking = false;
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("AnimMontage'/Game/ParagonGrux/Characters/Heroes/Grux/Animations/PrimaryAttack_FourStrikes_Montage.PrimaryAttack_FourStrikes_Montage'"));
-	if (ATTACK_MONTAGE.Succeeded())
-	{
-		AttackMontage = ATTACK_MONTAGE.Object;
-	}
+	IsIntro = true;
+	IsSkill = false;
+
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("AnimMontage'/Game/ParagonGrux/Characters/Heroes/Grux/Animations/PrimaryAttack_FourStrikes_Montage.PrimaryAttack_FourStrikes_Montage'"));
+	//if (ATTACK_MONTAGE.Succeeded())
+	//{
+		//AttackMontage = ATTACK_MONTAGE.Object;
+	//}
+}
+
+void UMonsterInstance::NativeBeginPlay()
+{
+	Super::NativeBeginPlay();
 }
 
 void UMonsterInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -36,9 +46,19 @@ void UMonsterInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UMonsterInstance::PlayAttackMontage()
+void UMonsterInstance::PlayAttackMontage(UAnimMontage* GetAttackMontage)
 {
-	Montage_Play(AttackMontage, 1.0f);
+	Montage_Play(GetAttackMontage, 1.0f);
+}
+
+void UMonsterInstance::PlaySkillMontage(UAnimMontage* GetAttackMontage)
+{
+	Montage_Play(GetAttackMontage, 1.0f);
+}
+
+void UMonsterInstance::PlayIntroMontage(UAnimMontage* GetIntroMontage)
+{
+	Montage_Play(GetIntroMontage, 1.0f);
 }
 
 void UMonsterInstance::SetDeadAnim()
@@ -51,12 +71,52 @@ FName UMonsterInstance::GetAttackMontageSectionName(int32 Section)
 	return FName(*FString::Printf(TEXT("Attack%d"), Section));
 }
 
-void UMonsterInstance::AnimNotify_OnAttackStart()
+void UMonsterInstance::AnimNotify_AttackCheck()
 {
-	OnOnCollisonStart_Attack.Broadcast();
+	AttackCheck_Attack.Broadcast();
 }
 
-void UMonsterInstance::AnimNotify_OnAttackEnded()
+void UMonsterInstance::AnimNotify_EndAttack()
 {
-	OnOnCollisonEnd_Attack.Broadcast();
+	EndAttack_Attack.Broadcast();
+}
+
+void UMonsterInstance::AnimNotify_GameStart()
+{
+	StartGame_Intro.Broadcast();
+}
+
+void UMonsterInstance::AnimNotify_EndSkill()
+{
+	EndSkill_Skill.Broadcast();
+}
+
+void UMonsterInstance::AnimNotify_StartParticle()
+{
+	StartParticle_Particle.Broadcast();
+}
+
+void UMonsterInstance::AnimNotify_StartIntroParticle()
+{
+	StartIntroParticle_Particle.Broadcast();
+}
+
+void UMonsterInstance::AnimNotify_StartSkillParticle()
+{
+	StartSkillParticle_Particle.Broadcast();
+}
+
+void UMonsterInstance::AnimNotify_StopMonster()
+{
+	StopMonster_Death.Broadcast();
+}
+
+void UMonsterInstance::AnimNotify_EndSkillParticle()
+{
+	EndSkillParticle_Particle.Broadcast();
+}
+
+void UMonsterInstance::AnimNotify_SkillCheck()
+{
+	SkillCheck_Skill.Broadcast();
 }

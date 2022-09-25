@@ -11,7 +11,10 @@ UMyPlayerAnimInstance::UMyPlayerAnimInstance()
 	IsInAir = false;
 	IsDead = false;
 	IsAttacking = true;
-	IsSkillAttacking = false;
+	IsCanMove = true;
+	IsTravel = false;
+	IsIntro = true;
+	fDirection = 0.0f;
 
 	nCombo = 0;
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE1(TEXT("AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/PrimaryAttack_A_Slow_Montage.PrimaryAttack_A_Slow_Montage'"));
@@ -39,9 +42,33 @@ UMyPlayerAnimInstance::UMyPlayerAnimInstance()
 	}
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_SKILLMONTAGE(TEXT("AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/Montage/Ability_R_Montage.Ability_R_Montage'"));
-	if (ATTACK_MONTAGE4.Succeeded())
+	if (ATTACK_SKILLMONTAGE.Succeeded())
 	{
 		AttackMontageSkill = ATTACK_SKILLMONTAGE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_SKILLINTROMONTAGE(TEXT("AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/Montage/Ability_R_Intro_Montage.Ability_R_Intro_Montage'"));
+	if (ATTACK_SKILLINTROMONTAGE.Succeeded())
+	{
+		AttackMontageSkillIntro = ATTACK_SKILLINTROMONTAGE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> TRAVEL_START(TEXT("AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/Montage/TravelMode_Start_Montage.TravelMode_Start_Montage'"));
+	if (TRAVEL_START.Succeeded())
+	{
+		StartTravelMode = TRAVEL_START.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> TRAVEL_END(TEXT("AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/Montage/TravelMode_End_Montage.TravelMode_End_Montage'"));
+	if (TRAVEL_END.Succeeded())
+	{
+		EndTravelMode = TRAVEL_END.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> STUN_START(TEXT("AnimMontage'/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/Montage/Stun_Montage.Stun_Montage'"));
+	if (STUN_START.Succeeded())
+	{
+		StunAnimation = STUN_START.Object;
 	}
 }
 
@@ -63,36 +90,39 @@ void UMyPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UMyPlayerAnimInstance::PlayAttackMontage()
+void UMyPlayerAnimInstance::PlayAttackMontage(UAnimMontage* GetAttackMontage)
 {
 	if (IsAttacking == true)
 	{
-		IsAttacking = false;
-		if (nCombo == 0)
-		{
-			Montage_Play(AttackMontageTypeA, 1.0f);
-		}
-
-		else if (nCombo == 1)
-		{
-			Montage_Play(AttackMontageTypeB, 1.0f);
-		}
-
-		else if (nCombo == 2)
-		{
-			Montage_Play(AttackMontageTypeC, 1.0f);
-		}
-
-		else if (nCombo == 3)
-		{
-			Montage_Play(AttackMontageTypeD, 1.0f);
-		}
+		Montage_Play(GetAttackMontage, 1.0f);
 	}
 }
 
-void UMyPlayerAnimInstance::PlaySkillMontage()
+void UMyPlayerAnimInstance::PlaySkillMontage(UAnimMontage* GetAttackMontage)
 {
 	Montage_Play(AttackMontageSkill, 1.0f);
+}
+
+void UMyPlayerAnimInstance::PlaySkillIntroMontage(UAnimMontage* GetAttackMontage)
+{
+	Montage_Play(AttackMontageSkillIntro, 1.0f);
+}
+
+void UMyPlayerAnimInstance::PlayTravelStartMontage(UAnimMontage* GetAttackMontage)
+{
+	Montage_Play(StartTravelMode, 1.0f);
+	IsTravel = true;
+}
+
+void UMyPlayerAnimInstance::PlayTravelEndMontage(UAnimMontage* GetAttackMontage)
+{
+	Montage_Play(EndTravelMode, 1.0f);
+	IsTravel = false;
+}
+
+void UMyPlayerAnimInstance::PlayStunMontage(UAnimMontage* GetAttackMontage)
+{
+	Montage_Play(StunAnimation, 1.0f);
 }
 
 void UMyPlayerAnimInstance::SetDeadAnim()
@@ -119,7 +149,69 @@ void UMyPlayerAnimInstance::AnimNotify_ResetCombo()
 	IsAttacking = true;
 }
 
+void UMyPlayerAnimInstance::AnimNotify_AttackCheck()
+{
+	AttackCheck_Attack.Broadcast();
+}
+
 void UMyPlayerAnimInstance::AnimNotify_EndSkill()
 {
 	EndSkill_Attack.Broadcast();
+	IsCanMove = true;
+}
+
+void UMyPlayerAnimInstance::AnimNotify_StopIntro()
+{
+	StopIntro_Attack.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_Travel_Start()
+{
+	Start_Travel.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_Travel_End()
+{
+	End_Travel.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_CantMove()
+{
+	CantMove_Stun.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_CanMove()
+{
+	CanMove_Stun.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_IntroCantMove()
+{
+	IntroCantMove_Intro.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_IntroCanMove()
+{
+	IntroCanMove_Intro.Broadcast();
+	IsIntro = false;
+}
+
+void UMyPlayerAnimInstance::AnimNotify_IntroParticle()
+{
+	IntroParticle_Intro.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_IntroSwordParticle()
+{
+	IntroSwordParticle_Intro.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_SkillParticle()
+{
+	SkillParticle_Attack.Broadcast();
+}
+
+void UMyPlayerAnimInstance::AnimNotify_SkillCheck()
+{
+	SkillCheck_Attack.Broadcast();
 }

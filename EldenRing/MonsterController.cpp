@@ -8,10 +8,12 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "MonsterCharacter.h"
+#include "MonsterInstance.h"
 
 const FName AMonsterController::HomePosKey(TEXT("HomePos"));
 const FName AMonsterController::PatrolPosKey(TEXT("PatrolPos"));
 const FName AMonsterController::TargetKey(TEXT("Target"));
+const FName AMonsterController::SkillTime(TEXT("SkillTime"));
 
 AMonsterController::AMonsterController(FObjectInitializer const& object_initializer)
 {
@@ -28,14 +30,16 @@ AMonsterController::AMonsterController(FObjectInitializer const& object_initiali
 void AMonsterController::BeginPlay()
 {
 	Super::BeginPlay();
-	RunBehaviorTree(BTAsset);
-	BTAsset_Component->StartTree(*BTAsset);
+
+	//RunBehaviorTree(BTAsset);
+	//BTAsset_Component->StartTree(*BTAsset);
 }
 
 void AMonsterController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	myCharacter = Cast<AMonsterCharacter>(InPawn);
 }
 
 UBlackboardComponent* AMonsterController::get_blackboard() const
@@ -59,4 +63,10 @@ void AMonsterController::StopAI()
 	}
 
 	BTAsset_Component->StopTree(EBTStopMode::Safe);
+}
+
+void AMonsterController::EndIntro() // 여기서 BT를 실행시킨다.
+{
+	RunBehaviorTree(BTAsset);
+	BTAsset_Component->StartTree(*BTAsset);
 }

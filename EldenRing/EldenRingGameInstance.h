@@ -9,6 +9,14 @@
 
 struct FPlayerFileDataTable;
 struct FMonsterDataTable;
+struct FMontageDataTable;
+struct FPlayerDataTable;
+struct FMonsterParticleDataTable;
+struct FPlayerMontageDataTable;
+struct FImageDataTable;
+struct FSoundDataTable;
+struct FItemDataTable;
+struct FInventoryDataTable;
 class UDataTable;
 
 /**
@@ -22,27 +30,69 @@ class ELDENRING_API UEldenRingGameInstance : public UGameInstance
 public:
 	UEldenRingGameInstance();
 
-	// 데이터 값 얻어오기(이어하기에서 사용?)
-
-	/*
-	FString GetPlayerName();
-	int GetPlayerHp();
-	FString GetPlayerGun();
-	int GetPlayerStage();
-	float GetPlayerBgmPower();
-	void SetPlayerBgmPower(float fBgmPower);
-	void SetPlayerDataDefault();
-	void SetPlayerStage();
-	void SetPlayerGun(FString yourGun);
-	*/
-
+	// 플레이어 데이터 값 얻어오기
 	USkeletalMesh* GetPlayerSkeletalMesh(FString PlayerType);
+	float GetPlayerHP();
+	float GetPlayerStamina();
+	int GetPlayerStage();
+	float GetPlayerMP();
 
 	// 몬스터 데이터값 얻어오기
 	USkeletalMesh* GetMonsterSkeletalMesh(FString MonsterType);
 	float GetMonsterHp(FString MonsterType);
 	float GetMonsterPower(FString MonsterType);
 	float GetMonsterSpeed(FString MonsterType);
+	float GetMonsterSkillPower(FString MonsterType);
+	float GetMonsterSkillRadius(FString MonsterType);
+	float GetMonsterSkillRange(FString MonsterType);
+
+	// 애님 몽타주 데이터값 얻어오기
+	UAnimMontage* GetMontage(FString MontageType);
+	UAnimMontage* GetSkillMontage(FString MontageType);
+	UAnimMontage* GetStartIntroMontage(FString MontageType);
+
+	// 애니메이션 데이터값 얻어오기
+	TSubclassOf<class UAnimInstance> GetAnimation(FString AnimationType);
+
+	// 몬스터 파티클 얻어오기
+	UParticleSystem* GetMonsterAttackParticle(FString MonsterType);
+	UParticleSystem* GetMonsterSkillParticle(FString MonsterType);
+	UParticleSystem* GetMonsterIntroParticle(FString MonsterType);
+	UParticleSystem* GetMonsterSkillSpareParticle(FString MonsterType);
+
+	// 플레이어 몽타주, 애니메이션, 파티클 얻어오기
+	UAnimMontage* GetPlayerAttackAMontage();
+	UAnimMontage* GetPlayerAttackBMontage();
+	UAnimMontage* GetPlayerAttackCMontage();
+	UAnimMontage* GetPlayerAttackDMontage();
+	UAnimMontage* GetPlayerSkillMontage();
+	UAnimMontage* GetPlayerSkillIntroMontage();
+	UAnimMontage* GetPlayerStunMontage();
+	UAnimMontage* GetPlayerStartTravelMontage();
+	UAnimMontage* GetPlayerEndTravelMontage();
+	TSubclassOf<class UAnimInstance> GetPlayerAnimation();
+	UParticleSystem* GetPlayerIntroParticle();
+	UParticleSystem* GetPlayerIntroSwordParticle();
+	UParticleSystem* GetPlayerSkillParticle();
+
+	// 이미지 얻어오기
+	TSoftObjectPtr<UTexture> GetImage(FString ImageType);
+
+	// 사운드 얻어오기
+	USoundWave* GetSound(FString TypeName);
+
+	// 아이템 정보 얻어오기
+	FString GetItemName(FString ItemType);
+	UTexture2D* GetItemImage(FString ItemType);
+	FString GetItemDescript(FString ItemType);
+
+	// 인벤토리 정보 얻어오기, 설정하기
+	FString GetInventoryItemName(int nSlot);
+	int GetInventoryItemCount(int nSlot);
+	void SetInventoryItemCount(int nSlot, int nCount);
+	void SetInventoryItemName(int nSlot, FString setItemName);
+	void SetInventorySlotInit(int nSlot);
+
 
 	/*
 	FString GetMonsterName(FString MonsterType);
@@ -71,4 +121,28 @@ private:
 
 	UPROPERTY()
 		UDataTable* FMonsterTable;
+
+	UPROPERTY()
+		UDataTable* FMontageTable;
+
+	UPROPERTY()
+		UDataTable* FPlayerTable;
+
+	UPROPERTY()
+		UDataTable* FMonsterParticleTable;
+
+	UPROPERTY()
+		UDataTable* FPlayerMontageTable;
+
+	UPROPERTY()
+		UDataTable* FImageTable;
+
+	UPROPERTY()
+		UDataTable* FSoundTable;
+
+	UPROPERTY()
+		UDataTable* FItemTable;
+
+	UPROPERTY()
+		UDataTable* FInventoryTable;
 };

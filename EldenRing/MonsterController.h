@@ -24,9 +24,12 @@ public:
 	static const FName HomePosKey;
 	static const FName PatrolPosKey;
 	static const FName TargetKey;
+	static const FName SkillTime;
 
 	void RunAI();
 	void StopAI();
+	UFUNCTION()
+		void EndIntro();
 
 private:
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
@@ -37,4 +40,7 @@ private:
 
 	UPROPERTY()
 		class UBlackboardComponent* BBAsset;
+
+	UPROPERTY()
+		class AMonsterCharacter* myCharacter;
 };

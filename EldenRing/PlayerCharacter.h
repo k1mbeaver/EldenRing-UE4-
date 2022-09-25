@@ -4,7 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "ItemStruct.h"
 #include "PlayerCharacter.generated.h"
+
+struct Potion
+{
+	FString PotionType = "Null";
+	int PotionAmount = 0;
+};
 
 UCLASS()
 class ELDENRING_API APlayerCharacter : public ACharacter
@@ -37,6 +44,18 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class UCameraComponent* Camera;
 
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+		USceneComponent* ParticleLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI)
+		TArray<FPlayerItem> Inventory;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = UI)
+		FPlayerItem DefaultInventory = {"", "", nullptr, 0};
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		int nInventory; // 인벤토리 슬롯 수
+
 	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Animation)
 	//UPROPERTY(VisibleInstanceOnly, Category = Animation)
 		//class UMyPlayerAnimInstance* MyAnim;
@@ -54,6 +73,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HP)
 		float fMaxHp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MP)
+		float fPlayerMp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MP)
+		float fMaxMp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stamina)
+		float fPlayerStamina;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stamina)
+		float fMaxStamina;
+
 	/** AnimMontage to play each time we fire */
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	//UAnimMontage* FireAnimation;
@@ -69,10 +100,31 @@ public:
 		class UMyPlayerAnimInstance* CharacterAnim;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		bool IsAttacking;
+		bool bAttack;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float AttackRange;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float AttackRadius;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float AttackPower;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
+		float SkillRange;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
+		float SkillRadius;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
+		float SkillPower;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bIsRun;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		bool bRunning;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bPlayerPause;
@@ -82,6 +134,34 @@ public:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bIsPlayerControlled;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		bool bSkill;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		bool bCanSkill;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		bool bTravel;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		bool bAlive;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		bool bInventory;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		int nCombo;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		FVector CameraOffset;
+
+	UPROPERTY()
+		class UGameplayStatics* GameStatic;
+
+	Potion HpPotion = { "HP", 5 };
+	Potion MpPotion = { "MP", 5 };
+	Potion StaminaPotion = { "Stamina", 5 };
 
 	//UPROPERTY()
 		//class UParticleSystem* AttackParticle;
@@ -111,9 +191,39 @@ public:
 	UPROPERTY(VisibleInstanceOnly, Replicated, Category = Speed)
 		float fSprintSpeedMultiPlayer; // 달리기
 	*/
-	//UPROPERTY(VisibleInstanceOnly, Replicated, Category = Animation)
-	//UPROPERTY(VisibleInstanceOnly, Category = Animation)
-		//class UABAnimInstance* ABAnim;
+	UPROPERTY(VisibleInstanceOnly, Category = Animation)
+		class UMyPlayerAnimInstance* PlayerAnim;
+
+	UPROPERTY(VisibleInstanceOnly, Category = HUD)
+		class APlayerUI_HUD* TestHUD;
+private:
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* AttackAMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* AttackBMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* AttackCMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* AttackDMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* SkillMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* SkillIntroMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Travel, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* StartTravelMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Travel, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* EndTravelMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Stun, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* StunMontage;
 
 public:
 	void UpDown(float NewAxisValue);
@@ -126,17 +236,70 @@ public:
 
 	void Attack();
 
+	void AttackCheck();
+
 	void Run();
 
 	void StopRun();
 
 	void Skill();
 
-	void StopSkill();
+	void SkillCheck();
+
+	void StopSkillIntro();
+
+	void TravelMode();
+
+	void HpDrink();
+
+	void MpDrink();
+
+	void StaminaDrink();
+
+	void CheckInventory();
+
+	void InitInventory();
+
+	void GetItem(FString ItemName);
 
 	UFUNCTION()
-		void OnSkillMontageEnded(UAnimMontage* montage, bool Interrupted);
+		void SaveCombo();
+
+	UFUNCTION()
+		void ResetCombo();
+	
+	UFUNCTION()
+		void IsStunStart();
+
+	UFUNCTION()
+		void IsStunEnd();
+
+	UFUNCTION()
+		void IsTravelMode();
+
+	UFUNCTION()
+		void StopSkill();
+
+	UFUNCTION()
+		void StopIntro();
+
+	UFUNCTION()
+		void IntroCantMove();
+
+	UFUNCTION()
+		void IntroCanMove();
+
+	UFUNCTION()
+		void IntroParticle();
+
+	UFUNCTION()
+		void IntroSwordParticle();
+
+	UFUNCTION()
+		void SkillParticle();
+
+	UFUNCTION()
+		void AttackedProjectTile(float fDamage);
 
 	//void PlayerPause();
-
 };

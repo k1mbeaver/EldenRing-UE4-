@@ -45,5 +45,17 @@ private:
 
 	void Skill();
 
+	void StopSkillIntro();
+
+	void TravelMode();
+
+	void HpDrink();
+
+	void MpDrink();
+
+	void StaminaDrink();
+
+	void CheckInventory();
+
 	//void PlayerPause();
 };

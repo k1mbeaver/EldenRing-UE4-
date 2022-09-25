@@ -43,6 +43,15 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
              //  && MyCharacter->GetController()->IsPlayerController()
             if (MyCharacter)
             {
+                int SkillTime = OwnerComp.GetBlackboardComponent()->GetValueAsInt(AMonsterController::SkillTime);
+                SkillTime++;
+
+                if (SkillTime > 20) // 스킬 쿨이 50이 넘어가면 사용후
+                {
+                    SkillTime = 0; // 초기화
+                }
+
+                OwnerComp.GetBlackboardComponent()->SetValueAsInt(AMonsterController::SkillTime, SkillTime);
                 OwnerComp.GetBlackboardComponent()->SetValueAsObject(AMonsterController::TargetKey, MyCharacter);
                 DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Green, false, 0.2f);
 
