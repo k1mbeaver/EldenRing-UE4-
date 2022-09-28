@@ -15,7 +15,7 @@ struct FImageDataTable : public FTableRowBase
 public:
 	// ¿ÃπÃ¡ˆ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSoftObjectPtr<UTexture> MyImage;
+		UTexture2D* MyImage;
 };
 
 UCLASS()

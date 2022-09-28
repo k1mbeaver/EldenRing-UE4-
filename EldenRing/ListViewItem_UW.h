@@ -27,6 +27,7 @@ private:
 	void SetItemCount(int nCount);
 	void SetItemName(FString setName);
 	void SetItemImage(UTexture2D* setImage);
+	void SetItemDescript(FString setDescript);
 
 	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		//int nCount;

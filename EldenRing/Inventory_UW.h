@@ -47,4 +47,7 @@ public:
 	void SetListInit(int nIndex, FString strName, int nCount, UTexture2D* setImage);
 	void ListUpdate();
 	void Init();
+
+	UFUNCTION(BlueprintCallable)
+		void SetInitDescript(UObject* ItemData);
 };

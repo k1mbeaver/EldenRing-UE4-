@@ -308,10 +308,10 @@ TSubclassOf<class UAnimInstance> UEldenRingGameInstance::GetPlayerAnimation()
 	return myAnimation;
 }
 
-TSoftObjectPtr<UTexture> UEldenRingGameInstance::GetImage(FString ImageType)
+UTexture2D* UEldenRingGameInstance::GetImage(FString ImageType)
 {
 	FImageDataTable* ImageData = FImageTable->FindRow<FImageDataTable>(*ImageType, TEXT(""));
-	TSoftObjectPtr<UTexture> myImage = ImageData->MyImage;
+	UTexture2D* myImage = ImageData->MyImage;
 	return myImage;
 }
 

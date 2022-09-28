@@ -8,6 +8,11 @@ void UPlayerItemData::SetItemIndex(int nIndex)
 	ItemIndex = nIndex;
 }
 
+void UPlayerItemData::SetItemDescript(FString strDescript)
+{
+	ItemDescript = strDescript;
+}
+
 void UPlayerItemData::SetItemName(FString strName)
 {
 	ItemName = strName;
@@ -41,4 +46,9 @@ FString UPlayerItemData::GetItemName()
 UTexture2D* UPlayerItemData::GetItemImage()
 {
 	return ItemImage;
+}
+
+FString UPlayerItemData::GetItemDescript()
+{
+	return ItemDescript;
 }

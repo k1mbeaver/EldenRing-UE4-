@@ -32,8 +32,13 @@ public:
 	void SetItemName(FString strName);
 	void SetItemImage(UTexture2D* setImage);
 	void SetItemCount(int nCount);
+	void SetItemDescript(FString strDescript);
+
 	int GetItemIndex();
 	int GetItemCount();
 	FString GetItemName();
 	UTexture2D* GetItemImage();
+	FString GetItemDescript();
+
+	FString ItemDescript;
 };

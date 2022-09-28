@@ -76,7 +76,7 @@ public:
 	UParticleSystem* GetPlayerSkillParticle();
 
 	// 이미지 얻어오기
-	TSoftObjectPtr<UTexture> GetImage(FString ImageType);
+	UTexture2D* GetImage(FString ImageType);
 
 	// 사운드 얻어오기
 	USoundWave* GetSound(FString TypeName);

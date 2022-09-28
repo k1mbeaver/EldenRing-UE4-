@@ -6,6 +6,7 @@
 #include "Components/Image.h"
 #include "Components/ListView.h"
 #include "PlayerItemData.h"
+#include "EldenRingGameInstance.h"
 
 void UInventory_UW::NativeOnInitialized()
 {
@@ -53,13 +54,16 @@ void UInventory_UW::SetListInit(int nIndex, FString strName, int nCount, UTextur
 
 void UInventory_UW::Init()
 {
-	ItemImage->SetBrushFromTexture(nullptr);
+	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+
+	ItemImage->SetBrushFromTexture(MyGI->GetImage("Null"));
 	ItemName->SetText(FText::FromString(""));
 	ItemDescript->SetText(FText::FromString(""));
 }
 
 void UInventory_UW::SetHidden()
 {
+	Init();
 	SetVisibility(ESlateVisibility::Hidden);
 }
 
@@ -78,4 +82,18 @@ void UInventory_UW::SetListCount(int nIndex, int nCount)
 	UPlayerItemData* ItemData = Cast<UPlayerItemData>(ItemListView->GetItemAt(nIndex));
 
 	ItemData->SetItemCount(nCount);
+}
+
+void UInventory_UW::SetInitDescript(UObject* ItemData)
+{
+	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+
+	UPlayerItemData* myItemData = Cast<UPlayerItemData>(ItemData);
+
+	SetImage(myItemData->GetItemImage());
+	SetName(myItemData->GetItemName());
+
+	SetDescript(MyGI->GetItemDescript(myItemData->GetItemName()));
+
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, TEXT("ItemClick!"));
 }
