@@ -14,6 +14,8 @@ const FName AMonsterController::HomePosKey(TEXT("HomePos"));
 const FName AMonsterController::PatrolPosKey(TEXT("PatrolPos"));
 const FName AMonsterController::TargetKey(TEXT("Target"));
 const FName AMonsterController::SkillTime(TEXT("SkillTime"));
+const FName AMonsterController::bUIPrint(TEXT("bUIPrint"));
+
 
 AMonsterController::AMonsterController(FObjectInitializer const& object_initializer)
 {

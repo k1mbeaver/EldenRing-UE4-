@@ -54,10 +54,10 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bAlive;
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 		FString strMonsterType;
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 		FString strMonsterItem;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -151,6 +151,7 @@ public:
 	//void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	//void AttackByPlayer(float DamageAmount);
 	void MoveMonster();
+	//void FindPlayer();
 	void StopMonster();
 	void StopAIController();
 	void InitializeAI(FString MonsterType);

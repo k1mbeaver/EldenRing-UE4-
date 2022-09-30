@@ -79,6 +79,11 @@ void APlayerUI_HUD::SetMonsterVisible()
 	MainUIObject->SetMonsterVisible();
 }
 
+void APlayerUI_HUD::SetMonsterHidden()
+{
+	MainUIObject->SetMonsterHidden();
+}
+
 void APlayerUI_HUD::SetPotionAmount(FString strPotionType, int nAmount)
 {
 	MainUIObject->SetPotionAmount(strPotionType, nAmount);

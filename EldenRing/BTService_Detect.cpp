@@ -6,12 +6,15 @@
 #include "MonsterCharacter.h"
 #include "PlayerCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "PlayerUI_HUD.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 UBTService_Detect::UBTService_Detect()
 {
     NodeName = TEXT("Detect");
     Interval = 0.3f;
+    bUIPrint = false;
 }
 
 void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -33,6 +36,10 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
     FCollisionQueryParams CollisionQueryParam(NAME_None, false, ControllingPawn);
     bool bResult = World->OverlapMultiByChannel(OverlapResults, Center, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel1, FCollisionShape::MakeSphere(DetectRadius), CollisionQueryParam);
 
+    APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+
+    AMonsterCharacter* myMonster = Cast<AMonsterCharacter>(ControllingPawn);
+
     if (bResult)
     {
         for (auto const& OverlapResult : OverlapResults)
@@ -51,6 +58,15 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
                     SkillTime = 0; // ÃÊ±âÈ­
                 }
 
+                if (!bUIPrint)
+                {
+                    HUD->SetMonsterName(myMonster->strMonsterType);
+                    HUD->SetMonsterHP(myMonster->fAIHp / myMonster->fMaxHp);
+                    HUD->SetMonsterVisible();
+
+                    bUIPrint = true;
+                }
+
                 OwnerComp.GetBlackboardComponent()->SetValueAsInt(AMonsterController::SkillTime, SkillTime);
                 OwnerComp.GetBlackboardComponent()->SetValueAsObject(AMonsterController::TargetKey, MyCharacter);
                 DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Green, false, 0.2f);
@@ -66,6 +82,7 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
             }
         }
     }
+
     DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Red, false, 0.2f);
 }
 

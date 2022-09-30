@@ -59,6 +59,13 @@ void UPlayerUI_UW::SetMonsterVisible()
 	MonsterHPBarImage->SetVisibility(ESlateVisibility::Visible);
 }
 
+void UPlayerUI_UW::SetMonsterHidden()
+{
+	MonsterName->SetVisibility(ESlateVisibility::Hidden);
+	MonsterHPBar->SetVisibility(ESlateVisibility::Hidden);
+	MonsterHPBarImage->SetVisibility(ESlateVisibility::Hidden);
+}
+
 void UPlayerUI_UW::SetPotionAmount(FString strPotionType, int nAmount)
 {
 	if (strPotionType == "HP")

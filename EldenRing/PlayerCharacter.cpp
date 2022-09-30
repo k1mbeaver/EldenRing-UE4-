@@ -543,7 +543,7 @@ void APlayerCharacter::IsTravelMode()
 		bTravel = true;
 		bCanMove = true;
 		bAttack = false;
-		GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+		GetCharacterMovement()->MaxWalkSpeed = 1000.0f;
 	}
 }
 

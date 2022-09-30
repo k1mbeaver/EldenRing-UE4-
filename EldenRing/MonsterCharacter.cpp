@@ -80,40 +80,41 @@ void AMonsterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
-	nMonsterType = MyGI->GetPlayerStage();
+	//UEldenRingGameInstance* MyGI = GetGameInstance<UEldenRingGameInstance>();
+	//nMonsterType = MyGI->GetPlayerStage();
 	
-	switch (nMonsterType)
+	if (strMonsterType == "Grux")
 	{
-	case 0:
-		strMonsterType = "Grux";
-		strMonsterItem = "GruxItem";
+		//strMonsterType = "Grux";
+		//strMonsterItem = "GruxItem";
 		IntroParticleMuzzleLocation->SetRelativeLocation(FVector(0.0f, 0.0f, -70.0f));
 		ParticleMuzzleLocation->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
-		break;
-		
-	case 1:
-		strMonsterType = "Narbash";
-		strMonsterItem = "NarbashItem";
+	}
+
+	else if (strMonsterType == "Narbash")
+	{
+		//strMonsterType = "Narbash";
+		//strMonsterItem = "NarbashItem";
 		IntroParticleMuzzleLocation->SetRelativeLocation(FVector(10.0f, 0.0f, 150.0f));
 		ParticleMuzzleLocation->SetRelativeLocation(FVector(60.0f, 0.0f, 20.0f));
-		break;
+	}
 
-	case 2:
-		strMonsterType = "Rampage";
-		strMonsterItem = "RampageItem";
+	else if (strMonsterType == "Rampage")
+	{
+		//strMonsterType = "Rampage";
+		//strMonsterItem = "RampageItem";
 		IntroParticleMuzzleLocation->SetRelativeLocation(FVector(10.0f, 0.0f, 50.0f));
 		ParticleMuzzleLocation->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
-		break;
+	}
 
-	case 3:
-		strMonsterType = "Sevarog";
-		strMonsterItem = "SevarogItem";
+	else if (strMonsterType == "Sevarog")
+	{
+		//strMonsterType = "Sevarog";
+		//strMonsterItem = "SevarogItem";
 		IntroParticleMuzzleLocation->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 		ParticleMuzzleLocation->SetRelativeLocation(FVector(0.0, 0.0f, -90.0f));
-		break;
 	}
-	
+
 	InitializeAI(strMonsterType); // Narbash, Props, Rampage, Sevarog, Grux
 }
 
@@ -226,6 +227,7 @@ float AMonsterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	if (fAIHp <= 0) // 피가 다 까이면
 	{
 		bAlive = false;
+		HUD->SetMonsterHidden();
 		//HUD->SetGameOverUIVisible();
 	}
 
@@ -464,10 +466,10 @@ void AMonsterCharacter::MoveMonster()
 
 	AIController->EndIntro();
 
-	APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+	//APlayerUI_HUD* HUD = Cast<APlayerUI_HUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
 
-	HUD->SetMonsterName(strMonsterType);
-	HUD->SetMonsterVisible();
+	//HUD->SetMonsterName(strMonsterType);
+	//HUD->SetMonsterVisible();
 
 	MonsterAnim->IsIntro = false;
 }

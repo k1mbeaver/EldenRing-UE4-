@@ -29,6 +29,7 @@ public:
 	void SetMonsterHP(float fCurrent);
 	void SetMonsterName(FString strMonsterName);
 	void SetMonsterVisible();
+	void SetMonsterHidden();
 	void SetPotionAmount(FString strPotionType, int nAmount);
 
 	// 인벤토리
