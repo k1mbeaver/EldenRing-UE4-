@@ -58,13 +58,13 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
                     SkillTime = 0; // ÃÊ±âÈ­
                 }
 
-                if (!bUIPrint)
+                if (!(myMonster->bUIPrint))
                 {
                     HUD->SetMonsterName(myMonster->strMonsterType);
                     HUD->SetMonsterHP(myMonster->fAIHp / myMonster->fMaxHp);
                     HUD->SetMonsterVisible();
 
-                    bUIPrint = true;
+                    myMonster->bUIPrint = true;
                 }
 
                 OwnerComp.GetBlackboardComponent()->SetValueAsInt(AMonsterController::SkillTime, SkillTime);

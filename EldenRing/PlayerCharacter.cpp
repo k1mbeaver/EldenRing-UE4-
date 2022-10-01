@@ -487,7 +487,9 @@ void APlayerCharacter::StopSkill()
 {
 	bCanMove = true;
 	bSkill = false;
-	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	bIsRun = true;
+
+	//GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 }
 
 void APlayerCharacter::StopIntro()
@@ -502,7 +504,7 @@ void APlayerCharacter::StopIntro()
 
 	HUD->SetPlayerMP(fPlayerMp / fMaxMp);
 
-	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	//GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 }
 
 void APlayerCharacter::TravelMode()

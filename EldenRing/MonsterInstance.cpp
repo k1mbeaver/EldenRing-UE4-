@@ -120,3 +120,8 @@ void UMonsterInstance::AnimNotify_SkillCheck()
 {
 	SkillCheck_Skill.Broadcast();
 }
+
+void UMonsterInstance::AnimNotify_DestroyMonster()
+{
+	DestroyMonster_Death.Broadcast();
+}

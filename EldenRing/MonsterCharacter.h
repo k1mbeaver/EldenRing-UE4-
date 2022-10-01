@@ -54,6 +54,9 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		bool bAlive;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		bool bUIPrint;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 		FString strMonsterType;
 
@@ -160,4 +163,5 @@ public:
 	void SkillParticleStart();
 	void SkillParticleEnd();
 	void DropItem();
+	void MonsterDestory();
 };

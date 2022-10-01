@@ -63,6 +63,7 @@ AMonsterCharacter::AMonsterCharacter()
 
 	bCanAttack = true;
 	bAlive = true;
+	bUIPrint = false;
 
 	fMaxHp = 100.0f;
 	fAIHp = 100.0f;
@@ -433,6 +434,7 @@ void AMonsterCharacter::InitializeAI(FString MonsterType)
 	MonsterAnim->StopMonster_Death.AddUObject(this, &AMonsterCharacter::StopMonster);
 	MonsterAnim->EndSkillParticle_Particle.AddUObject(this, &AMonsterCharacter::SkillParticleEnd);
 	MonsterAnim->SkillCheck_Skill.AddUObject(this, &AMonsterCharacter::SkillCheck);
+	MonsterAnim->DestroyMonster_Death.AddUObject(this, &AMonsterCharacter::MonsterDestory);
 
 	// 인트로 모션 시작
 	MonsterAnim->PlayIntroMontage(IntroMontage);
@@ -495,4 +497,9 @@ void AMonsterCharacter::DropItem()
 	{
 		Item->ItemName = strMonsterItem;
 	}
+}
+
+void AMonsterCharacter::MonsterDestory()
+{
+	Destroy();
 }
