@@ -4,4 +4,9 @@
 #include "PlayerDoor.h"
 #include "PlayerCharacter.h"
 
+void APlayerDoor::CastToPlayer(AActor* OtherActor)
+{
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
 
+	PlayerCharacter->GameClear();
+}

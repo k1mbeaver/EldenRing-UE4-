@@ -154,6 +154,9 @@ public:
 		int nCombo;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
+		int nItemClear;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 		FVector CameraOffset;
 
 	UPROPERTY()
@@ -261,6 +264,8 @@ public:
 	void InitInventory();
 
 	void GetItem(FString ItemName);
+
+	void GameClear();
 
 	UFUNCTION()
 		void SaveCombo();

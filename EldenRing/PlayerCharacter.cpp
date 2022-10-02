@@ -100,6 +100,7 @@ APlayerCharacter::APlayerCharacter()
 	bAlive = true;
 	bInventory = false; // false가 안열려있는 상태, true는 열려있는 상태
 	nInventory = 16;
+	nItemClear = 0;
 	//myGun = EGunState::BASIC;
 }
 
@@ -545,7 +546,7 @@ void APlayerCharacter::IsTravelMode()
 		bTravel = true;
 		bCanMove = true;
 		bAttack = false;
-		GetCharacterMovement()->MaxWalkSpeed = 1000.0f;
+		GetCharacterMovement()->MaxWalkSpeed = 5000.0f;
 	}
 }
 
@@ -880,6 +881,8 @@ void APlayerCharacter::GetItem(FString ItemName)
 			int nCount = MyGI->GetInventoryItemCount(Index);
 			UTexture2D* setImage = MyGI->GetItemImage(ItemName);
 
+			nItemClear++;
+
 			HUD->SetListInit(Index, ItemName, nCount, setImage);
 
 			break;
@@ -887,5 +890,17 @@ void APlayerCharacter::GetItem(FString ItemName)
 	}
 
 	HUD->ListUpdate();
+}
+
+void APlayerCharacter::GameClear()
+{
+	if (nItemClear >= 4)
+	{
+		UWorld* World = GetWorld();
+
+		APlayerController* PlayerController = World->GetFirstPlayerController();
+
+		PlayerController->ConsoleCommand("quit");
+	}
 }
 

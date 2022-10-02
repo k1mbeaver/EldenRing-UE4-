@@ -13,5 +13,7 @@ UCLASS()
 class ELDENRING_API APlayerDoor : public ATriggerBox
 {
 	GENERATED_BODY()
-	
+
+		UFUNCTION(BlueprintCallable)
+		void CastToPlayer(AActor* OtherActor);
 };
